@@ -1,0 +1,50 @@
+# WP Ultimatesales.ai Newsletter Plugin
+
+By **ReadySpace**. A direct WordPress → GoHighLevel newsletter bridge for Ultimatesales.ai/GoHighLevel accounts. Any editor can write the post and its Excerpt; no ChatGPT, AI summariser, Next.js email code or WordPress SMTP is required.
+
+**Initial developer preview: 0.3.0-alpha.1. Not a one-click production release.** This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
+
+## What it does
+
+- Queues an excerpt email five minutes after a post's first publication.
+- Excludes the existing archive on installation; edits and republishes do not resend.
+- Uses the explicit WordPress Excerpt (10–150 words; 60–90 recommended).
+- Checks the public page's HTTP status, canonical URL, single H1 and indexing directives.
+- Reads confirmed, email-eligible subscribers from GoHighLevel; never creates contacts or grants consent.
+- Creates and checks a draft before sending; uncertain create/send outcomes stop for reconciliation.
+- Includes a privacy link, legal footer and the provider's unsubscribe merge token.
+- Stores the API token encrypted; allows administrators to enter it in WordPress.
+- Offers Off, Draft-only and Live modes. Configuration changes invalidate verification.
+
+The plugin does **not** create signup forms, confirmation workflows, authenticated sending domains or newsletters from unconfirmed contacts. Those must already exist in the chosen account.
+
+## Start here
+
+1. Read [installation and launch](docs/INSTALLATION.md).
+2. Configure a test WordPress site and a controlled recipient before production use.
+3. Read [operations and recovery](docs/OPERATIONS.md) before enabling delivery.
+4. See [development](docs/DEVELOPMENT.md) and [contributing](CONTRIBUTING.md) to collaborate.
+
+The plugin directory remains `cleverspeed-newsletter` to preserve legacy option names, queue records and duplicate-send history. This is an internal compatibility identifier, not a built-in sender or account. Do not rename its database identifiers during an upgrade.
+
+## Requirements
+
+- Single-site WordPress; PHP 8.1+ with OpenSSL, DOM, JSON and libxml.
+- HTTPS administration, secure WordPress authentication keys and a reliable cron runner.
+- MySQL/MariaDB advisory locks; verify compatibility with the actual host.
+- A GoHighLevel location-level private integration, authenticated email delivery and confirmed consent records.
+- Existing staff access with permission to manage campaigns.
+
+The predecessor pilot ran on WordPress 7.1.2. That is not certification of this new alpha across WordPress/PHP versions. Isolated tests mock WordPress and provider responses; they do not establish live delivery or all email-client layouts.
+
+## Downloads
+
+Use GitHub's **Code → Download ZIP** to download the source. For a WordPress-installable ZIP, run `bash scripts/package.sh`; upload the resulting archive through WordPress → Plugins → Add New → Upload Plugin. Do not upload the whole repository ZIP as the plugin.
+
+## Licence
+
+Public source publication does not itself grant an open-source licence. ReadySpace's licence selection is pending; no additional reuse or redistribution licence is granted in this initial snapshot. Do not submit contributed code until the project licence is settled.
+
+## Safety
+
+No API credentials, customer account settings, subscriber data or live acceptance scripts belong in this repository. Do not post them in issues. See [security reporting](SECURITY.md). API acceptance is not proof of email delivery; inspect delivery and suppression in the provider dashboard.

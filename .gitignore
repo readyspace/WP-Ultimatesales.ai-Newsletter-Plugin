@@ -1,0 +1,10 @@
+.env*
+wp-config.php
+*.sql
+*.log
+*.zip
+dist/
+vendor/
+node_modules/
+.runtime/
+.DS_Store
