@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0-alpha.2 — white-label naming
+
+- Use UltimateSales.AI in plugin descriptions, administrator labels, status/error messages, repository documentation and public project title.
+- Preserve working API endpoints, storage host checks, credentials, consent rules and queue identifiers.
+- No sending-policy or newsletter-template changes. Existing working pilot receives a separate wording-only 0.2.2 patch, not this generic alpha.
+
 ## 0.3.0-alpha.1 — initial public source snapshot
 
 - ReadySpace attribution and requested public project name.

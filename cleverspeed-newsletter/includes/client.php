@@ -15,14 +15,14 @@ final class Client {
         if ($body !== null) $args['body'] = wp_json_encode($body);
         $response = wp_remote_request(self::BASE . $path, $args);
         unset($token, $args);
-        if (is_wp_error($response)) throw new \RuntimeException('GoHighLevel transport failure. Remote outcome may be unknown; do not blindly resend.');
+        if (is_wp_error($response)) throw new \RuntimeException('UltimateSales.AI transport failure. Remote outcome may be unknown; do not blindly resend.');
         $status = wp_remote_retrieve_response_code($response);
         if ($status < 200 || $status >= 300) {
             // Never persist response bodies: they can contain contact data or sensitive diagnostics.
-            throw new \RuntimeException('GoHighLevel returned HTTP ' . $status . '; review required.');
+            throw new \RuntimeException('UltimateSales.AI returned HTTP ' . $status . '; review required.');
         }
         $data = json_decode(wp_remote_retrieve_body($response), true);
-        if (!is_array($data)) throw new \RuntimeException('Unexpected GoHighLevel response; review required.');
+        if (!is_array($data)) throw new \RuntimeException('Unexpected UltimateSales.AI response; review required.');
         return $data;
     }
 

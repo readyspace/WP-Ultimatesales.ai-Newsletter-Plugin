@@ -4,7 +4,7 @@ This alpha requires a developer/operator. It does not yet include a self-service
 
 ## 1. Prepare the account and site
 
-Use a separate staging site and controlled test recipient. Verify the GoHighLevel location, sending domain, sender/reply mailbox, legal identity, postal address, privacy notice, opt-in confirmation flow and unsubscribe behaviour. The plugin neither creates these nor confirms subscribers. Confirmed, pending and unsubscribed tags must be distinct and maintained by your existing consent process. Do not tag an unconsenting contact as confirmed.
+Use a separate staging site and controlled test recipient. Verify the UltimateSales.AI location, sending domain, sender/reply mailbox, legal identity, postal address, privacy notice, opt-in confirmation flow and unsubscribe behaviour. The plugin neither creates these nor confirms subscribers. Confirmed, pending and unsubscribed tags must be distinct and maintained by your existing consent process. Do not tag an unconsenting contact as confirmed.
 
 Create a location-level private integration with exactly these permissions:
 

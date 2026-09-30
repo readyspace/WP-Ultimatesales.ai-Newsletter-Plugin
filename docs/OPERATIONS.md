@@ -22,7 +22,7 @@ The usual path is `queued → creating → created → draft_ready` or `queued �
 
 Contacts must match the location and confirmed tag, have valid email and explicit global DND=false, and have no pending/unsubscribed tag or active/unknown email suppression. Emails are deduplicated. The full search is repeated immediately before scheduling. Pagination errors or the 10,000-contact safety boundary stop the whole operation; there is no partial-list send.
 
-GoHighLevel remains authoritative. A contact can unsubscribe after the final read, so provider suppression must also be effective. No contact writes, imports, confirmation, SMS, WhatsApp, tracking installation or consent changes are performed by this plugin.
+UltimateSales.AI remains authoritative. A contact can unsubscribe after the final read, so provider suppression must also be effective. No contact writes, imports, confirmation, SMS, WhatsApp, tracking installation or consent changes are performed by this plugin.
 
 ## Failures
 

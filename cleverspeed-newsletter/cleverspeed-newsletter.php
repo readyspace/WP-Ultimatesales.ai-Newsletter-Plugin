@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: WP Ultimatesales.ai Newsletter Plugin
- * Description: Direct WordPress-to-GoHighLevel article newsletters, with consent checks and a durable send ledger.
- * Version: 0.3.0-alpha.1
+ * Plugin Name: WP UltimateSales.AI Newsletter Plugin
+ * Description: Direct WordPress-to-UltimateSales.AI article newsletters, with consent checks and a durable send ledger.
+ * Version: 0.3.0-alpha.2
  * Requires PHP: 8.1
  * Author: ReadySpace
  */
@@ -134,7 +134,7 @@ final class Plugin {
             self::set($id,['state'=>'sending','recipient_count'=>count($recipients),'note'=>'Send requested; never retry blindly']);
             $sent = $client->send($campaign,$a['title'],$recipients,$s['user_id']);
             if (($sent['campaignId'] ?? '') !== $campaign) throw new \RuntimeException('Send acknowledgement does not match; reconcile before any further action.');
-            self::set($id,['state'=>'submitted','source_id'=>$sent['sourceId'] ?? '', 'note'=>'GoHighLevel accepted the campaign. Delivery is tracked in GoHighLevel; acceptance is not delivery.']);
+            self::set($id,['state'=>'submitted','source_id'=>$sent['sourceId'] ?? '', 'note'=>'UltimateSales.AI accepted the campaign. Delivery is tracked in UltimateSales.AI; acceptance is not delivery.']);
         } catch (\Throwable $e) {
             $job = self::record($id);
             $state = in_array($job['state'] ?? '',['creating','sending'],true) ? 'uncertain' : 'held';
@@ -150,7 +150,7 @@ final class Plugin {
         $s = self::settings();
         global $wpdb;
         $rows = $wpdb->get_results('SELECT * FROM ' . self::table() . " WHERE state<>'excluded' ORDER BY updated_at DESC LIMIT 30",ARRAY_A);
-        echo '<div class="wrap"><h1>WP Ultimatesales.ai Newsletter Plugin</h1><p>By ReadySpace · Version 0.3.0-alpha.1 · Developer preview</p><p>WordPress → GoHighLevel. No Next.js email logic and no WordPress SMTP.</p>';
+        echo '<div class="wrap"><h1>WP UltimateSales.AI Newsletter Plugin</h1><p>By ReadySpace · Version 0.3.0-alpha.2 · Developer preview</p><p>WordPress → UltimateSales.AI. No Next.js email logic and no WordPress SMTP.</p>';
         echo '<p>Private per-site configuration: ' . (Config::ready() ? 'valid' : 'missing or invalid; see the installation guide') . '.</p>';
         echo '<p>Mode: <strong>' . esc_html($s['mode']) . '</strong>. Private credential: ' . (Client::credentialReady() ? 'saved securely' : 'not ready') .
             '. Connection verification: ' . (self::verified() ? 'passed' : 'pending') . '.</p>';
@@ -165,7 +165,7 @@ final class Plugin {
         echo '</form><h2>Integration credential</h2><p>Only administrators can replace this credential. The saved value is never displayed. Saving a replacement switches sending off and resets connection verification. It does not send a test email.</p>';
         echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
         wp_nonce_field('rs_newsletter_credential');
-        echo '<input type="hidden" name="action" value="rs_newsletter_credential"><label for="rs-token">GoHighLevel private integration token</label><br><input id="rs-token" type="password" name="token" value="" autocomplete="new-password" spellcheck="false" class="large-text" maxlength="4096" required><p>Enter it here directly. Do not send it by chat or email. Saving requires HTTPS.</p>';
+        echo '<input type="hidden" name="action" value="rs_newsletter_credential"><label for="rs-token">UltimateSales.AI private integration token</label><br><input id="rs-token" type="password" name="token" value="" autocomplete="new-password" spellcheck="false" class="large-text" maxlength="4096" required><p>Enter it here directly. Do not send it by chat or email. Saving requires HTTPS.</p>';
         submit_button('Save credential and keep sending off','secondary');
         echo '</form><p>The credential is encrypted in the WordPress database using keys from wp-config.php. This protects a database-only copy, not a compromised server. Changing those keys requires re-entering the credential. Stop queue workers before rotating credentials during live operation.</p>';
         $preview = Config::ready() ? Policy::content('An example article', 'This is an illustrative newsletter excerpt. Describe the useful ideas in your article and give readers a reason to visit your website. Keep this text clear and concise. The plugin uses the WordPress Excerpt field rather than sending the full article. Check the title, public link and consent settings before enabling automatic delivery.', Config::get('public_origin') . '/example-article/') : '<p>Complete private configuration to preview your email design.</p>';
@@ -181,7 +181,7 @@ final class Plugin {
             }
             echo '</td></tr>';
         }
-        echo '</tbody></table><p>Creating, sending or uncertain jobs require reconciliation in GoHighLevel. There is deliberately no blind-resend button. Disabling this plugin stops new queue work; it cannot recall an email already accepted by GoHighLevel.</p></div>';
+        echo '</tbody></table><p>Creating, sending or uncertain jobs require reconciliation in UltimateSales.AI. There is deliberately no blind-resend button. Disabling this plugin stops new queue work; it cannot recall an email already accepted by UltimateSales.AI.</p></div>';
     }
     public static function saveSettings(): void {
         if (!current_user_can('manage_options')) wp_die('Forbidden',403);
@@ -224,7 +224,7 @@ final class Plugin {
     public static function box(\WP_Post $post): void {
         wp_nonce_field('cs_newsletter_post','cs_newsletter_nonce');
         $job = self::record($post->ID);
-        echo '<p>First publication can send the Excerpt through GoHighLevel after five minutes. Updates do not resend.</p>';
+        echo '<p>First publication can send the Excerpt through UltimateSales.AI after five minutes. Updates do not resend.</p>';
         echo '<label><input type="checkbox" name="cs_newsletter_skip" value="1" ' . checked(get_post_meta($post->ID,'_cs_newsletter_skip',true),'1',false) . '> Exclude this article from the newsletter</label>';
         echo '<p>Newsletter status: ' . esc_html($job['state'] ?? 'Not published') . '</p><p>Add the teaser in WordPress’s Excerpt field. No full-content fallback.</p>';
     }

@@ -1,8 +1,8 @@
-# WP Ultimatesales.ai Newsletter Plugin
+# WP UltimateSales.AI Newsletter Plugin
 
-By **ReadySpace**. A direct WordPress → GoHighLevel newsletter bridge for Ultimatesales.ai/GoHighLevel accounts. Any editor can write the post and its Excerpt; no ChatGPT, AI summariser, Next.js email code or WordPress SMTP is required.
+By **ReadySpace**. A direct WordPress → UltimateSales.AI newsletter bridge for UltimateSales.AI accounts. Any editor can write the post and its Excerpt; no ChatGPT, AI summariser, Next.js email code or WordPress SMTP is required.
 
-**Initial developer preview: 0.3.0-alpha.1. Not a one-click production release.** This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
+**Initial developer preview: 0.3.0-alpha.2. Not a one-click production release.** This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
 
 ## What it does
 
@@ -10,7 +10,7 @@ By **ReadySpace**. A direct WordPress → GoHighLevel newsletter bridge for Ulti
 - Excludes the existing archive on installation; edits and republishes do not resend.
 - Uses the explicit WordPress Excerpt (10–150 words; 60–90 recommended).
 - Checks the public page's HTTP status, canonical URL, single H1 and indexing directives.
-- Reads confirmed, email-eligible subscribers from GoHighLevel; never creates contacts or grants consent.
+- Reads confirmed, email-eligible subscribers from UltimateSales.AI; never creates contacts or grants consent.
 - Creates and checks a draft before sending; uncertain create/send outcomes stop for reconciliation.
 - Includes a privacy link, legal footer and the provider's unsubscribe merge token.
 - Stores the API token encrypted; allows administrators to enter it in WordPress.
@@ -32,7 +32,7 @@ The plugin directory remains `cleverspeed-newsletter` to preserve legacy option 
 - Single-site WordPress; PHP 8.1+ with OpenSSL, DOM, JSON and libxml.
 - HTTPS administration, secure WordPress authentication keys and a reliable cron runner.
 - MySQL/MariaDB advisory locks; verify compatibility with the actual host.
-- A GoHighLevel location-level private integration, authenticated email delivery and confirmed consent records.
+- A UltimateSales.AI location-level private integration, authenticated email delivery and confirmed consent records.
 - Existing staff access with permission to manage campaigns.
 
 The predecessor pilot ran on WordPress 7.1.2. That is not certification of this new alpha across WordPress/PHP versions. Isolated tests mock WordPress and provider responses; they do not establish live delivery or all email-client layouts.
