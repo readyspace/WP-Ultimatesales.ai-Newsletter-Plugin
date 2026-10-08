@@ -7,7 +7,8 @@
 - Fail closed when the send ledger cannot durably record a transition or the initial archive cannot be excluded.
 - Build deterministic allowlisted review packages under the proposed directory slug; preserve legacy options, hooks, ledger and API endpoints.
 - ReadySpace approved GPLv2-or-later licensing and confirmed the necessary rights; include the full licence and grant notices.
-- Remains an alpha: provider acceptance, actual-host validation and final service policies are release gates.
+- ReadySpace approved the linked terms, privacy notice, messaging policy and their URLs; record that approval separately from unfinished public-page details.
+- Remains an alpha: provider acceptance, actual-host validation and unfinished terms/privacy details are release gates.
 
 ## 0.3.0-alpha.2 — white-label naming
 
