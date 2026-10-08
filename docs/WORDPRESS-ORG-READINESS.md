@@ -2,7 +2,7 @@
 
 Audit date: 8 October 2026. Base: `6c61cb991ee46b8c9d0c9698de83c368bfbbcd85`.
 
-**Status: owner-approved submission candidate; directory approval is pending.** ReadySpace authorized GPLv2-or-later licensing and confirmed the necessary rights on 8 October 2026. The owner subsequently approved the name/slug, directory acknowledgements and upload. The account's required 2FA is verified. Version `0.3.0` applies WordPress.org's numeric metadata requirement to the audited `0.3.0-alpha.3` implementation; integration behavior is unchanged. Passing tests does not constitute directory approval or universal installation acceptance.
+**Status: submitted on 8 October 2026; WordPress.org automated scan passed; Awaiting Review.** The accepted file is `readyspace-newsletter-for-ultimatesales-ai-0.3.0.zip`, with initial assigned slug `readyspace-newsletter-for-ultimatesales-ai`. ReadySpace authorised licensing, the name/slug, acknowledgements and submission, and enabled 2FA was verified. Version `0.3.0` applies the numeric metadata requirement to the audited `0.3.0-alpha.3` implementation; integration behavior is unchanged. Manual directory approval and first public SVN release remain pending.
 
 ## Required release gates
 
@@ -39,7 +39,9 @@ The package includes PHP runtime files, `readme.txt` and the approved licence if
 
 ## Workflow after all gates pass
 
-On the signed-in Add your Plugin page, select the reviewed ZIP (under 10 MB), add the prepared service/data-flow summary, then check only truthful acknowledgements. Obtain final approval before clicking Upload. Capture the receipt/slug and await the review email; submission is not directory publication. After approval, use the assigned SVN repository for the same verified release and directory assets; make the first public SVN release a separate explicitly approved action.
+The authorised upload was accepted after the numeric-version correction. The receipt lists version `0.3.0`, initial slug `readyspace-newsletter-for-ultimatesales-ai`, automated scan `Pass` and review status `Awaiting Review`; it reports that a confirmation email was sent. No second submission was made after acceptance. The saved receipt/screenshots are in the private handoff. The first alpha-format failure did not create an accepted submission.
+
+Await the review email and address feedback in this same submission. After approval, use the assigned SVN repository for the verified release and directory assets, with numeric release tags matching the Stable tag. The first public SVN release requires separate explicit authorisation; it has not been performed. The new service-policy proposal remains unpublished and is separate website follow-up.
 
 References: [directory guidelines](https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/), [developer FAQ](https://developer.wordpress.org/plugins/wordpress-org/plugin-developer-faq/), [Plugin Check](https://wordpress.org/plugins/plugin-check/), [readme rules](https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/), [assets](https://developer.wordpress.org/plugins/wordpress-org/plugin-assets/), [required 2FA and checks](https://make.wordpress.org/plugins/2024/10/01/plugin-check-and-2fa-now-mandatory-for-new-plugin-submissions/).
 
@@ -49,4 +51,4 @@ The custom `cs_newsletter_jobs` table is a durable send ledger, rather than ordi
 
 Runtime query identifiers use WordPress `%i` placeholders, with values bound separately. Activation uses `dbDelta()` for the declared schema and verifies that the table exists and the archive exclusion query succeeds before marking installation or scheduling the worker. The schema's table identifier comes only from WordPress's database prefix plus the fixed `cs_newsletter_jobs` suffix, and its collation comes from `$wpdb->get_charset_collate()`. Its activation schema inspection/change can still produce a `SchemaChange` warning. These operations preserve the ledger and do not delete existing records.
 
-The existing `CleverSpeed\Newsletter` namespace and `cs_*` identifiers are retained for compatibility with the earlier pilot. Namespace-prefix warnings must be reviewed with that migration constraint in mind; changing the public plugin name/ZIP folder does not rename its database or hook identifiers. These explanations support reviewer assessment; the remaining publisher/name/public-submission gates above still apply.
+The existing `CleverSpeed\Newsletter` namespace and `cs_*` identifiers are retained for compatibility with the earlier pilot. Namespace-prefix warnings must be reviewed with that migration constraint in mind; changing the public plugin name/ZIP folder does not rename its database or hook identifiers. These explanations support reviewer assessment; manual directory approval and first public SVN publication remain pending.

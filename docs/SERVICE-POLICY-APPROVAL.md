@@ -26,6 +26,6 @@ The website source is https://github.com/readyspace/ultimatesales-ai-headless-wp
 
 Next website action: align the new wording with operations, run the normal website build/staging checks, and prepare a PR into `staging` before an explicitly approved publication through the existing workflow. Contract-specific terms remain separate service maintenance.
 
-The public policy website is unchanged. Completed 4 October provider/host acceptance is reused as described in `ACCEPTANCE-BRIDGE.md`; no repeated delivery/unsubscribe check is required for policy drafting alone. No WordPress.org upload or newsletter send was made in this review.
+The public policy website is unchanged. Completed 4 October provider/host acceptance is reused as described in `ACCEPTANCE-BRIDGE.md`; no repeated delivery/unsubscribe check is required for policy drafting alone. WordPress.org subsequently accepted the authorised version `0.3.0` submission and lists Awaiting Review. No newsletter send or policy deployment was performed.
 
 Reference: [WordPress.org detailed guidelines](https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/).
