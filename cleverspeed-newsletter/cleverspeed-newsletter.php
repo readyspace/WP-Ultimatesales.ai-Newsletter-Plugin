@@ -95,9 +95,15 @@ final class Plugin {
         $title = Policy::plain($post->post_title);
         $url = Policy::publicUrl(get_permalink($post));
         $response = wp_safe_remote_get($url, ['timeout'=>20,'redirection'=>0,'limit_response_size'=>2000000]);
+        if (!is_wp_error($response) && in_array(wp_remote_retrieve_response_code($response), [301,308], true)) {
+            $location = (string) wp_remote_retrieve_header($response, 'location');
+            if ($location === $url || !Policy::samePublicArticle($location, $url)) throw new \RuntimeException('Public article redirect is not the same final-slash route; email held.');
+            $url = $location;
+            $response = wp_safe_remote_get($url, ['timeout'=>20,'redirection'=>0,'limit_response_size'=>2000000]);
+        }
         if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) throw new \RuntimeException('Public article is not available yet; email held.');
         if (stripos((string)wp_remote_retrieve_header($response, 'x-robots-tag'), 'noindex') !== false) throw new \RuntimeException('Public article has a noindex header.');
-        Policy::assertPublicArticle(wp_remote_retrieve_body($response), $url, $title);
+        $url = Policy::assertPublicArticle(wp_remote_retrieve_body($response), $url, $title);
         return compact('title','excerpt','url');
     }
     public static function tick(): void {

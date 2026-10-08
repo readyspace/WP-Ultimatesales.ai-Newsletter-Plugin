@@ -22,11 +22,15 @@ final class Policy {
         if (!array_key_exists('dnd', $contact) || $contact['dnd'] !== false) {
             return false;
         }
+        // Present email states must be explicitly inactive. A genuinely absent
+        // channel is left to the native marketing campaign's final suppression.
         $channels = array_key_exists('dndSettings', $contact) ? $contact['dndSettings'] : [];
         if (!is_array($channels)) return false;
-        if (array_key_exists('Email', $channels)) {
-            $email = $channels['Email'];
-            if (!is_array($email) || !in_array($email['status'] ?? null, ['inactive', 'disabled'], true)) return false;
+        foreach ($channels as $channel => $setting) {
+            if (!is_string($channel)) return false;
+            if (strcasecmp($channel, 'email') !== 0) continue;
+            if (!is_array($setting) || !is_string($setting['status'] ?? null) ||
+                strtolower($setting['status']) !== 'inactive') return false;
         }
         foreach ([Config::get('pending_tag'), Config::get('unsubscribed_tag')] as $tag) {
             if (in_array($tag, $tags, true)) return false;
@@ -58,7 +62,23 @@ final class Policy {
         return Config::get('public_origin') . $path;
     }
 
-    public static function assertPublicArticle(string $html, string $url, string $title): void {
+    public static function samePublicArticle(string $candidate, string $url): bool {
+        $expected = wp_parse_url($url);
+        $actual = wp_parse_url($candidate);
+        if (!$expected || !$actual) return false;
+        foreach ([$expected, $actual] as $parts) {
+            $path = $parts['path'] ?? '/';
+            if (($parts['scheme'] ?? '') !== 'https' ||
+                ('https://' . ($parts['host'] ?? '')) !== Config::get('public_origin') ||
+                isset($parts['user']) || isset($parts['pass']) || isset($parts['port']) ||
+                isset($parts['query']) || isset($parts['fragment']) ||
+                $path === '/' || str_contains($path, '..') || str_contains($path, '//')) return false;
+        }
+        // Only the final slash may differ; no other route normalization occurs.
+        return rtrim($actual['path'], '/') === rtrim($expected['path'], '/');
+    }
+
+    public static function assertPublicArticle(string $html, string $url, string $title): string {
         $dom = new \DOMDocument();
         $old = libxml_use_internal_errors(true);
         $dom->loadHTML('<?xml encoding="UTF-8">' . $html);
@@ -68,12 +88,13 @@ final class Policy {
         $h1 = $xpath->query('//h1');
         $canonical = $xpath->query('//link[contains(concat(" ",normalize-space(@rel)," ")," canonical ")]/@href');
         if ($h1->length !== 1 || self::plain($h1->item(0)->textContent) !== self::plain($title) ||
-            $canonical->length !== 1 || $canonical->item(0)->value !== $url) {
+            $canonical->length !== 1 || !self::samePublicArticle($canonical->item(0)->value, $url)) {
             throw new \RuntimeException('Public page title/canonical is not the expected article; email held.');
         }
         foreach ($xpath->query('//meta[translate(@name,"ABCDEFGHIJKLMNOPQRSTUVWXYZ","abcdefghijklmnopqrstuvwxyz")="robots"]/@content') as $node) {
             if (stripos($node->value, 'noindex') !== false) throw new \RuntimeException('Public article is noindex; email held.');
         }
+        return $canonical->item(0)->value;
     }
 
     public static function content(string $title, string $excerpt, string $url): string {
@@ -94,7 +115,7 @@ final class Policy {
             '<tr><td style="padding:22px 28px;background:#f5f8f7;border-top:1px solid #e0e8e5;border-radius:0 0 12px 12px">' .
             '<p style="margin:0 0 12px;color:#526574;font-size:12px;line-height:19px">You receive this email because you confirmed your ' . $escape(Config::get('brand')) . ' newsletter subscription.</p>' .
             '<p style="margin:0 0 12px;color:#526574;font-size:12px;line-height:19px">' . $escape(Config::get('legal_name')) . '<br>' . $escape(Config::get('postal_address')) . '</p>' .
-            '<p style="margin:0;font-size:12px;line-height:20px"><a href="' . $escape(Config::get('privacy_url')) . '" style="color:#247264;text-decoration:underline">Privacy notice</a> &nbsp;·&nbsp; <a href="{{unsubscribe}}" style="color:#247264;text-decoration:underline">Unsubscribe</a></p>' .
+            '<p style="margin:0;font-size:12px;line-height:20px"><a href="' . $escape(Config::get('privacy_url')) . '" style="color:#247264;text-decoration:underline">Privacy notice</a> &nbsp;·&nbsp; <a href="{{email.unsubscribe_link}}" style="color:#247264;text-decoration:underline">Unsubscribe</a></p>' .
             '</td></tr></table><!--[if mso]></td></tr></table><![endif]--></td></tr></table></body></html>';
     }
 }

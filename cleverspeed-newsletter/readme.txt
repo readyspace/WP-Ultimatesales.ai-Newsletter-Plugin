@@ -14,7 +14,7 @@ Send article excerpts through your UltimateSales.AI account, with subscriber che
 
 Connect a single-site WordPress backend to your UltimateSales.AI account. Headless frontends work when public articles pass the checks below.
 
-Version 0.3.0-alpha.3 is an unverified developer preview, licensed under GPLv2 or later. ReadySpace has authorized this licence and confirmed the necessary rights. Release validation and provider acceptance remain prerequisites to public submission.
+Version 0.3.0-alpha.3 is a release review candidate. ReadySpace authorized GPLv2 or later and confirmed its rights. Changed-code validation and applicable acceptance are required before submission.
 
 Five minutes after a post's first publication, the plugin checks its public page and uses its explicit 10-150 word Excerpt. Existing published posts, edits and republishes do not resend. Missing excerpts or failed checks hold the job.
 
@@ -29,11 +29,11 @@ It does not create signup forms, contacts, confirmation workflows or consent; au
 * UltimateSales.AI authenticated sending, location-level private integration and verified staff identity.
 * Accurate consent/suppression records and distinct confirmed, pending and unsubscribed tags.
 * HTTPS CMS/public origins with no path, port, query, fragment or trailing slash; single-site only, no subdirectory installations.
-* Public articles with an exact canonical URL, one matching H1 and no noindex directive.
+* Public articles with matching canonical/H1 and no noindex. Only a final-slash URL difference and one same-origin 301/308 redirect are allowed.
 
-An operator must edit private configuration and complete provider acceptance. There is no connection verification wizard. The predecessor pilot does not certify this alpha; use separate staging and controlled recipients.
+Private configuration and installation verification require an operator; no connection wizard is provided. Reuse applicable 4 October site delivery/unsubscribe/host results and check changed code. New accounts/sites need their own acceptance.
 
-Development, installation and recovery documentation: https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin
+Source and operating documentation: https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin
 
 = External services =
 

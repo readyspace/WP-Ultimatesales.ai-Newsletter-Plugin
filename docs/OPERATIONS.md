@@ -6,7 +6,7 @@ Write a normal WordPress post and an explicit 10–150-word Excerpt (60–90 rec
 
 Draft saves and edits do not send. Scheduled posts become eligible when WordPress changes them to Published. The first publication waits five minutes. Posts first published while Off remain excluded after enabling. Republishing the same post ID cannot create another queue job. A copied/new post has a new ID and is a different publication.
 
-The public page must return 200 without redirects, match the expected canonical and single H1, and not carry noindex. Headless sites must already map the CMS path to the public path. The plugin does not implement Faust previews or frontend deployment.
+The public page must return 200, match the expected canonical and single H1, and not carry noindex. One 301/308 redirect is permitted only when its absolute HTTPS destination differs solely by a final slash on the same configured origin and article path; a second redirect is rejected. Canonical URLs have the same narrow final-slash tolerance, and the validated canonical is used in the email. Headless sites must already map the CMS path to the public path. The plugin does not implement Faust previews or frontend deployment.
 
 ## Modes and states
 
@@ -20,7 +20,7 @@ The usual path is `queued → creating → created → draft_ready` or `queued �
 
 ## Consent
 
-Contacts must match the location and confirmed tag, have valid email and explicit global DND=false, and have no pending/unsubscribed tag or active/unknown email suppression. Emails are deduplicated. The full search is repeated immediately before scheduling. Pagination errors or the 10,000-contact safety boundary stop the whole operation; there is no partial-list send.
+Contacts must match the location and confirmed tag, have valid email and explicit global DND=false, and have no pending/unsubscribed tag. Every present Email channel entry is matched without case sensitivity and must explicitly say inactive; active, disabled, malformed, unknown or conflicting entries are rejected. Absent Email channel metadata is not labelled inactive: final suppression remains the native marketing provider's responsibility. Emails are deduplicated. The full search is repeated immediately before scheduling. Pagination errors or the 10,000-contact safety boundary stop the whole operation; there is no partial-list send.
 
 UltimateSales.AI remains authoritative. A contact can unsubscribe after the final read, so provider suppression must also be effective. No contact writes, imports, confirmation, SMS, WhatsApp, tracking installation or consent changes are performed by this plugin.
 

@@ -46,9 +46,9 @@ final class Client {
                 $id = $contact['id'] ?? '';
                 if (!is_string($id) || $id === '' || isset($seen[$id])) throw new \RuntimeException('Contact pagination is incomplete or repeated; email held.');
                 $seen[$id] = true;
-                // Search returns explicit DND/channel state; Get Contact may omit it.
-                // The worker repeats this fresh search immediately before scheduling.
-                // Missing/unknown DND still fails closed in Policy::eligible().
+                // Recheck fresh membership before scheduling. Global DND must
+                // be explicit false; absent email metadata remains subject to
+                // the native marketing campaign's final suppression.
                 if (Policy::eligible($contact)) {
                     $email = strtolower($contact['email']);
                     if (!isset($emails[$email])) $ids[] = $id;
@@ -89,7 +89,15 @@ final class Client {
         foreach ([Policy::plain($title), $excerpt] as $text) {
             if (!str_contains($plain, $text)) throw new \RuntimeException('Saved campaign text differs; email held.');
         }
-        if (!str_contains(html_entity_decode($body), $url) || !str_contains($body, '{{unsubscribe}}')) {
+        $dom = new \DOMDocument();
+        $old = libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="UTF-8">' . $body);
+        libxml_clear_errors();
+        libxml_use_internal_errors($old);
+        $xpath = new \DOMXPath($dom);
+        $unsubscribe = $xpath->query('//a[@href="{{email.unsubscribe_link}}"]');
+        $legacy = $xpath->query('//a[@href="{{unsubscribe}}"]');
+        if (!str_contains(html_entity_decode($body), $url) || $unsubscribe->length !== 1 || $legacy->length !== 0) {
             throw new \RuntimeException('Saved campaign article/unsubscribe link missing; email held.');
         }
     }

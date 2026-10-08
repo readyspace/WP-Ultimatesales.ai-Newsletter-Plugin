@@ -8,7 +8,8 @@
 - Build deterministic allowlisted review packages under the proposed directory slug; preserve legacy options, hooks, ledger and API endpoints.
 - ReadySpace approved GPLv2-or-later licensing and confirmed the necessary rights; include the full licence and grant notices.
 - ReadySpace approved the linked terms, privacy notice, messaging policy and their URLs; record that approval separately from unfinished public-page details.
-- Remains an alpha: provider acceptance, actual-host validation and unfinished terms/privacy details are release gates.
+- Reuse completed 4 October acceptance for the installed site release; carry forward its corrected native unsubscribe anchor and strict Email DND interpretation, with bounded final-slash handling for headless/conventional article URLs.
+- Remains a review candidate: validate changes against the prior acceptance and resolve unfinished terms/privacy details before final submission.
 
 ## 0.3.0-alpha.2 — white-label naming
 

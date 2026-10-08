@@ -35,7 +35,7 @@ The source directory remains `cleverspeed-newsletter`. Directory candidate packa
 - A UltimateSales.AI location-level private integration, authenticated email delivery and confirmed consent records.
 - Existing staff access with permission to manage campaigns.
 
-This candidate has isolated PHP 8.1/8.3/8.4 regression coverage and WordPress 6.9/7.1.3 activation/default-Off checks in WordPress Playground (SQLite). This does not establish MySQL/MariaDB advisory locking, live provider delivery, unsubscribe suppression or all email-client layouts. See the release readiness checklist before use.
+This candidate has isolated PHP 8.1/8.3/8.4 regression coverage and WordPress 6.9/7.1.3 activation/default-Off checks in WordPress Playground (SQLite). Separate 4 October operating records establish real WordPress/MySQL locking, controlled provider delivery and unsubscribe suppression for the accepted site release `0.3.0-alpha.2-usai.2`. Those results are reused where the code and service contracts agree; they do not establish every installation or email-client layout. See the release readiness checklist before use.
 
 ## Downloads
 
