@@ -62,7 +62,7 @@ Service information and policies:
 * Privacy notice: https://ultimatesales.ai/privacy
 * Messaging policy: https://ultimatesales.ai/messaging-policy
 
-ReadySpace approved these policies and URLs on 8 October 2026. Public pages still carry draft labels and unfinished terms/privacy details. Complete those details before production use.
+ReadySpace approved these policies and URLs on 8 October 2026. Account retention and tracking depend on service practices/settings; review the linked notices and your site's practices.
 
 == Installation ==
 
@@ -132,4 +132,4 @@ Complete staging acceptance and keep a private rollback backup first. Preserve t
 
 * Directory preparation candidate with ReadySpace naming and external-service/install documentation.
 * Hardened mode requests, durable ledger transitions and malformed consent responses while retaining legacy integration identifiers.
-* GPLv2-or-later and policy URLs approved by ReadySpace; MySQL/provider acceptance and unfinished terms/privacy details remain release gates.
+* GPLv2-or-later and policy URLs approved; prior provider/host acceptance reused. Final submission review remains pending.
