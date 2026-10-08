@@ -6,7 +6,8 @@
 - Reject malformed mode requests and require POST for mode/recheck operations.
 - Fail closed when the send ledger cannot durably record a transition or the initial archive cannot be excluded.
 - Build deterministic allowlisted review packages under the proposed directory slug; preserve legacy options, hooks, ledger and API endpoints.
-- Remains an alpha: licence approval, provider acceptance and final service policies are release gates, not resolved by this version number.
+- ReadySpace approved GPLv2-or-later licensing and confirmed the necessary rights; include the full licence and grant notices.
+- Remains an alpha: provider acceptance, actual-host validation and final service policies are release gates.
 
 ## 0.3.0-alpha.2 — white-label naming
 

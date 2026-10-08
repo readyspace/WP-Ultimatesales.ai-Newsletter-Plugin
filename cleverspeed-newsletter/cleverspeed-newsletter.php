@@ -9,6 +9,13 @@
  * Author: ReadySpace
  * Author URI: https://readyspace.com
  * Text Domain: readyspace-newsletter-for-ultimatesales-ai
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * Copyright (C) 2026 ReadySpace.
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ * This program is free software under GPL version 2 or any later version.
+ * It is distributed WITHOUT ANY WARRANTY; see the included LICENSE.
  */
 namespace CleverSpeed\Newsletter;
 defined('ABSPATH') || exit;

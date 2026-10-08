@@ -39,11 +39,11 @@ This candidate has isolated PHP 8.1/8.3/8.4 regression coverage and WordPress 6.
 
 ## Downloads
 
-Use GitHub's **Code → Download ZIP** to download the source. For an isolated-test ZIP, run `bash scripts/package.sh --candidate`; its filename is marked `REVIEW-ONLY`. After owner licensing approval and all readiness blockers are resolved, `bash scripts/package.sh --submission` checks the licence and compatibility metadata before creating a submission package. Upload only a reviewed build through WordPress → Plugins → Add New → Upload Plugin. Do not upload the whole repository ZIP as the plugin.
+Use GitHub's **Code → Download ZIP** to download the source. For an isolated-test ZIP, run `bash scripts/package.sh --candidate`; its filename is marked `REVIEW-ONLY`. After all remaining readiness blockers are resolved, `bash scripts/package.sh --submission` checks the licence and compatibility metadata before creating a submission package. Upload only a reviewed build through WordPress → Plugins → Add New → Upload Plugin. Do not upload the whole repository ZIP as the plugin.
 
 ## Licence
 
-Public source publication does not itself grant an open-source licence. ReadySpace's licence selection is pending; no additional reuse or redistribution licence is granted in this initial snapshot. Do not submit contributed code until the project licence is settled.
+Copyright (C) 2026 ReadySpace. All original source code, documentation and directory artwork are licensed under the GNU General Public License, version 2 or, at your option, any later version (`GPL-2.0-or-later`). ReadySpace authorized this licence and confirmed the necessary rights on 8 October 2026. See [LICENSE](LICENSE) for the full terms and [COPYRIGHT.txt](COPYRIGHT.txt) for the grant and scope. The UltimateSales.AI service is governed by its separate service terms. The review label records incomplete release validation; GPL rights apply to this candidate.
 
 ## Safety
 

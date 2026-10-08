@@ -1,6 +1,6 @@
 # WordPress.org directory assets
 
-These are directory presentation assets, separate from the runtime plugin. The original `directory-assets/icon.svg` uses a neutral envelope and delivery arrow; it is not a recreation of an official corporate logo. Public redistribution remains pending alongside the project's GPL-compatible licence decision.
+These are directory presentation assets, separate from the runtime plugin. The original `directory-assets/icon.svg` uses a neutral envelope and delivery arrow; it is not a recreation of an official corporate logo. ReadySpace has authorized GPLv2-or-later licensing for the original directory artwork and confirmed the necessary rights. See LICENSE and COPYRIGHT.txt.
 
 After plugin approval, place final artwork in the top-level SVN `assets/` directory beside `trunk/` and `tags/`. Do not put directory artwork in `trunk/assets/` or a release-tag assets folder. It need not be included in the installable runtime ZIP.
 

@@ -5,7 +5,8 @@ Requires at least: 6.9
 Tested up to: 7.1
 Stable tag: 0.3.0-alpha.3
 Requires PHP: 8.1
-License: License selection pending
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Send article excerpts through your UltimateSales.AI account, with subscriber checks, draft review and a durable newsletter send ledger.
 
@@ -13,7 +14,7 @@ Send article excerpts through your UltimateSales.AI account, with subscriber che
 
 Connect a single-site WordPress backend to your UltimateSales.AI account. Headless frontends work when public articles pass the checks below.
 
-Version 0.3.0-alpha.3 is an unverified developer preview. ReadySpace's licence selection remains pending; this candidate grants no additional reuse or redistribution licence. A GPL-compatible licence, release validation and provider acceptance remain prerequisites to public submission.
+Version 0.3.0-alpha.3 is an unverified developer preview, licensed under GPLv2 or later. ReadySpace has authorized this licence and confirmed the necessary rights. Release validation and provider acceptance remain prerequisites to public submission.
 
 Five minutes after a post's first publication, the plugin checks its public page and uses its explicit 10-150 word Excerpt. Existing published posts, edits and republishes do not resend. Missing excerpts or failed checks hold the job.
 
@@ -131,4 +132,4 @@ Complete staging acceptance and keep a private rollback backup first. Preserve t
 
 * Directory preparation candidate with ReadySpace naming and external-service/install documentation.
 * Hardened mode requests, durable ledger transitions and malformed consent responses while retaining legacy integration identifiers.
-* Licence selection, MySQL/provider acceptance and owner licence approval remain pending.
+* GPLv2-or-later licensing approved by ReadySpace; MySQL/provider acceptance and final service policies remain release gates.
