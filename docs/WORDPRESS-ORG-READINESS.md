@@ -2,7 +2,7 @@
 
 Audit date: 8 October 2026. Base: `6c61cb991ee46b8c9d0c9698de83c368bfbbcd85`.
 
-**Status: review candidate only. Do not upload this alpha while the gates below are unresolved.** ReadySpace authorized GPLv2-or-later licensing and confirmed the necessary rights on 8 October 2026. Passing tests and generating a ZIP do not establish production acceptance.
+**Status: owner-approved submission candidate; directory approval is pending.** ReadySpace authorized GPLv2-or-later licensing and confirmed the necessary rights on 8 October 2026. The owner subsequently approved the name/slug, directory acknowledgements and upload. The account's required 2FA is verified. Version `0.3.0` applies WordPress.org's numeric metadata requirement to the audited `0.3.0-alpha.3` implementation; integration behavior is unchanged. Passing tests does not constitute directory approval or universal installation acceptance.
 
 ## Required release gates
 
@@ -12,12 +12,12 @@ Audit date: 8 October 2026. Base: `6c61cb991ee46b8c9d0c9698de83c368bfbbcd85`.
 - [x] The readme identifies the external SaaS, data sent/read, authorisation, local retention and limits of click/UTM tracking flags, and links the approved policies. WordPress.org guidelines 6/7 require clear service/data-flow disclosures; they do not prescribe retention periods or require completion of every SaaS contractual provision as submission fields.
 - [x] Reuse completed 4 October real-provider acceptance for the installed `0.3.0-alpha.2-usai.2` site release: controlled delivery, corrected custom unsubscribe, native suppression, final installed-policy exclusion, configuration/scopes and actual consent-tag/DND workflow checks. Owner confirmed completion on 8 October. See `ACCEPTANCE-BRIDGE.md`; a new account or repeat positive mail is not required solely for directory packaging.
 - [x] Reuse the completed real WordPress/MySQL suite (53 assertions plus install/live-state checks), independent-connection advisory locking and reviewed upgrade/ledger preservation. These establish the retained host mechanisms, not an execution of every new alpha.3 code path on that host.
-- [x] Changed-code validation passed: 293 synthetic assertions and 13-file syntax checks on PHP 8.1/8.3/8.4, including the provider-contract corrections, bounded canonical/redirect handling and ledger/archive/admin safeguards. These are isolated checks, distinct from the completed 4 October host/provider acceptance.
-- [x] Official Plugin Check 2.1.0 rerun on the licensed ZIP (SHA-256 `a09a364b54aeb0b415de871744abb1d88469a249702c7644da7a0236b35365e6`): 29 static and 34 including runtime checks, zero errors and 25 documented ledger/cache/namespace warnings. Exact ZIP passes activation/default-Off/admin/cron checks on WordPress 6.9 and 7.1.3.
+- [x] Changed-code validation passed: 293 synthetic assertions and 13-file syntax checks on PHP 8.1/8.3/8.4. The numeric release has fresh syntax checks on all five packaged PHP files on each version; functional evidence is reused after independently proving only two header/display text replacements. Original functional checks include including the provider-contract corrections, bounded canonical/redirect handling and ledger/archive/admin safeguards. These are isolated checks, distinct from the completed 4 October host/provider acceptance.
+- [x] Official Plugin Check 2.1.0 rerun on the licensed ZIP (SHA-256 `c54e7e8b9ee969367be624bbdedaae0a8a45de0d648caf84a2bfd09e5b028d51`): 29 static and 34 including runtime checks, zero errors and 25 documented ledger/cache/namespace warnings. Exact ZIP passes activation/default-Off/admin/cron checks on WordPress 6.9 and 7.1.3.
 - [x] Reuse the completed actual-host HTTPS/admin, encrypted credential/configuration verification, normal cache and mode-save/final-audit checks. The alpha.3 administrator type/POST safeguards have separate isolated regression coverage; no live credential is copied or rotated in this submission review.
-- [ ] Confirm ReadySpace publisher ownership and required 2FA. The signed-in account was verified as `readyspace`; 2FA state has not been verified or altered. Any other committers need individual secured accounts.
-- [ ] Approve the proposed public name **ReadySpace Newsletter for UltimateSales.AI** and candidate slug `readyspace-newsletter-for-ultimatesales-ai`. Search found no exact match, but availability and final approval are determined by WordPress.org. The slug becomes permanent after approval.
-- [ ] Owner explicitly approves the final public submission and directory acknowledgements after reviewing the exact ZIP and results.
+- [x] Verify ReadySpace publisher ownership and required 2FA. The signed-in `readyspace` company account and enabled 2FA were verified. The owner completed authentication setup personally; no setup secret or backup code was accessed. Any other committers need individual secured accounts.
+- [x] Owner approved **ReadySpace Newsletter for UltimateSales.AI** and proposed slug `readyspace-newsletter-for-ultimatesales-ai`. Search found no exact match, but availability and final approval are determined by WordPress.org. The slug becomes permanent after approval.
+- [x] Owner explicitly approved submission and all eight directory acknowledgements after reviewing the ZIP and results. The upload form initially rejected the alpha suffix before accepting a submission. The necessary numeric-version correction changes metadata/display text only, within that approved submission's scope; no new data, permissions, terms or integration behavior are introduced.
 
 ## Preserved integration and migration boundaries
 
@@ -33,7 +33,7 @@ Before publishing that website update, align the proposed retention/request work
 
 ## Packaging
 
-`bash scripts/package.sh --candidate` produces a deterministic, explicit-allowlist ZIP marked `REVIEW-ONLY` and its SHA-256. It is prepared for isolated review; the label records release-validation status while GPLv2-or-later rights apply. `--submission` refuses missing approved GPLv2-or-later fields/licence or tested compatibility metadata; the script is not a substitute for the release gates above.
+`bash scripts/package.sh --candidate` produces a deterministic, explicit-allowlist ZIP marked `REVIEW-ONLY` and its SHA-256. `--submission` also requires a numeric version, matching Stable tag, approved GPLv2-or-later fields/licence and tested compatibility metadata. The script is not a substitute for owner authorisation, validation and directory review.
 
 The package includes PHP runtime files, `readme.txt` and the approved licence if present. It excludes Git history, tests, private `wp-config.php`, logs, credentials, contact fixtures and directory artwork. Assets are maintained separately for SVN `assets/` after approval. No destructive uninstall is added: the send ledger remains to prevent duplicate sends.
 

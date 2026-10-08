@@ -21,6 +21,10 @@ if (source / 'LICENSE').is_file():
     files.append('LICENSE')
 if sys.argv[1] == '--submission':
     readme = (source / 'readme.txt').read_text()
+    if not re.fullmatch(r'\d+(?:\.\d+)*', version):
+        sys.exit('Submission build blocked: WordPress.org requires a numeric version with periods only.')
+    if f'Stable tag: {version}\n' not in readme:
+        sys.exit('Submission build blocked: Stable tag must match the numeric release version.')
     if 'LICENSE' not in files or ' * License: GPLv2 or later' not in header or 'License: GPLv2 or later' not in readme:
         sys.exit('Submission build blocked: owner-approved GPLv2-or-later licence is required. Use --candidate for review only.')
     if not re.search(r'^ \* Requires at least: \d', header, re.M) or not re.search(r'^Tested up to: \d', readme, re.M):

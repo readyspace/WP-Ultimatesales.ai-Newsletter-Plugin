@@ -2,7 +2,7 @@
 
 By **ReadySpace**. A direct WordPress → UltimateSales.AI newsletter bridge for UltimateSales.AI (https://ultimatesales.ai) accounts. Any editor can write the post and its Excerpt; no ChatGPT, AI summariser, Next.js email code or WordPress SMTP is required.
 
-**Initial developer preview: 0.3.0-alpha.3. Not a one-click production release.** This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
+**Directory submission candidate: 0.3.0. Operator setup required.** This uses the audited 0.3.0-alpha.3 implementation with numeric release metadata required by WordPress.org. This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
 
 ## What it does
 

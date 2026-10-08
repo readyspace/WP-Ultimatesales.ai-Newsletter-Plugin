@@ -3,7 +3,7 @@ Contributors: readyspace
 Tags: newsletter, email, headless, automation
 Requires at least: 6.9
 Tested up to: 7.1
-Stable tag: 0.3.0-alpha.3
+Stable tag: 0.3.0
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -14,7 +14,7 @@ Send article excerpts through your UltimateSales.AI account, with subscriber che
 
 Connect a single-site WordPress backend to your UltimateSales.AI account. Headless frontends work when public articles pass the checks below.
 
-Version 0.3.0-alpha.3 is a release review candidate. ReadySpace authorized GPLv2 or later and confirmed its rights. Changed-code validation and applicable acceptance are required before submission.
+Version 0.3.0 uses the audited 0.3.0-alpha.3 implementation with numeric metadata for WordPress.org. ReadySpace authorized GPLv2 or later and confirmed its rights.
 
 Five minutes after a post's first publication, the plugin checks its public page and uses its explicit 10-150 word Excerpt. Existing published posts, edits and republishes do not resend. Missing excerpts or failed checks hold the job.
 
@@ -122,14 +122,15 @@ Administrators can recheck held jobs before campaign creation. Creating/sending/
 
 Deactivation clears the queue hook. There is no automatic uninstall cleanup: settings, encrypted credential, post metadata and ledger remain. The ledger protects against repeat sends. Stop workers, reconcile campaigns and consult recovery docs before manual cleanup. Provider data remains in the provider account.
 
-= Can I replace a working site-specific pilot with this alpha? =
+= Can I replace a working site-specific pilot with this plugin? =
 
 Complete staging acceptance and keep a private rollback backup first. Preserve the pilot folder, options, hooks, ledger and metadata. Legacy cleverspeed-newsletter identifiers remain. The proposed directory slug may require reviewed folder migration for directory updates.
 
 == Changelog ==
 
-= 0.3.0-alpha.3 =
+= 0.3.0 =
 
 * Directory preparation candidate with ReadySpace naming and external-service/install documentation.
+* Numeric release metadata required by WordPress.org; audited implementation retained.
 * Hardened mode requests, durable ledger transitions and malformed consent responses while retaining legacy integration identifiers.
-* GPLv2-or-later and policy URLs approved; prior provider/host acceptance reused. Final submission review remains pending.
+* GPLv2-or-later and policy URLs approved; prior provider/host acceptance reused.
