@@ -2,7 +2,7 @@
 
 By **ReadySpace**. A direct WordPress → UltimateSales.AI newsletter bridge for UltimateSales.AI (https://ultimatesales.ai) accounts. Any editor can write the post and its Excerpt; no ChatGPT, AI summariser, Next.js email code or WordPress SMTP is required.
 
-**Initial developer preview: 0.3.0-alpha.2. Not a one-click production release.** This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
+**Initial developer preview: 0.3.0-alpha.3. Not a one-click production release.** This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
 
 ## What it does
 
@@ -25,21 +25,21 @@ The plugin does **not** create signup forms, confirmation workflows, authenticat
 3. Read [operations and recovery](docs/OPERATIONS.md) before enabling delivery.
 4. See [development](docs/DEVELOPMENT.md) and [contributing](CONTRIBUTING.md) to collaborate.
 
-The plugin directory remains `cleverspeed-newsletter` to preserve legacy option names, queue records and duplicate-send history. This is an internal compatibility identifier, not a built-in sender or account. Do not rename its database identifiers during an upgrade.
+The source directory remains `cleverspeed-newsletter`. Directory candidate packages use `readyspace-newsletter-for-ultimatesales-ai`, matching the proposed public name **ReadySpace Newsletter for UltimateSales.AI**. Legacy database options, queue records, hooks and duplicate-send history retain their identifiers. Existing pilot installations need an explicit folder migration; never activate both copies. See [WordPress.org readiness](docs/WORDPRESS-ORG-READINESS.md).
 
 ## Requirements
 
-- Single-site WordPress; PHP 8.1+ with OpenSSL, DOM, JSON and libxml.
+- Single-site WordPress 6.9+; PHP 8.1+ with OpenSSL, DOM, JSON and libxml.
 - HTTPS administration, secure WordPress authentication keys and a reliable cron runner.
 - MySQL/MariaDB advisory locks; verify compatibility with the actual host.
 - A UltimateSales.AI location-level private integration, authenticated email delivery and confirmed consent records.
 - Existing staff access with permission to manage campaigns.
 
-The predecessor pilot ran on WordPress 7.1.2. That is not certification of this new alpha across WordPress/PHP versions. Isolated tests mock WordPress and provider responses; they do not establish live delivery or all email-client layouts.
+This candidate has isolated PHP 8.1/8.3/8.4 regression coverage and WordPress 6.9/7.1.3 activation/default-Off checks in WordPress Playground (SQLite). This does not establish MySQL/MariaDB advisory locking, live provider delivery, unsubscribe suppression or all email-client layouts. See the release readiness checklist before use.
 
 ## Downloads
 
-Use GitHub's **Code → Download ZIP** to download the source. For a WordPress-installable ZIP, run `bash scripts/package.sh`; upload the resulting archive through WordPress → Plugins → Add New → Upload Plugin. Do not upload the whole repository ZIP as the plugin.
+Use GitHub's **Code → Download ZIP** to download the source. For an isolated-test ZIP, run `bash scripts/package.sh --candidate`; its filename is marked `REVIEW-ONLY`. After owner licensing approval and all readiness blockers are resolved, `bash scripts/package.sh --submission` checks the licence and compatibility metadata before creating a submission package. Upload only a reviewed build through WordPress → Plugins → Add New → Upload Plugin. Do not upload the whole repository ZIP as the plugin.
 
 ## Licence
 

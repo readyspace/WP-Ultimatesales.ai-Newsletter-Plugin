@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/fixture.php';
 // Isolated handler tests. No WordPress bootstrap, live options or HTTP.
-define('ABSPATH','/unused/');
+
 define('AUTH_KEY',str_repeat('test-only-auth-key-',4)); define('SECURE_AUTH_KEY',str_repeat('test-only-secure-key-',4));
 function register_activation_hook(...$a) {} function register_deactivation_hook(...$a) {}
 function add_filter(...$a) {} function add_action(...$a) {}
@@ -10,7 +10,9 @@ class Stop extends RuntimeException {} class Redirect extends RuntimeException {
 function wp_die(...$a) { throw new Stop('stopped'); }
 function check_admin_referer($a) { if (!$GLOBALS['nonce']) wp_die(); }
 function is_ssl() { return $GLOBALS['ssl']; }
-function wp_unslash($s) { return stripslashes($s); }
+function wp_unslash($s) { return is_string($s) ? stripslashes($s) : $s; }
+function sanitize_text_field($s) { return trim(strip_tags($s)); }
+function sanitize_key($s) { return preg_replace('/[^a-z0-9_\-]/','',strtolower($s)); }
 function get_option($n,$d=[]) { return $GLOBALS['options'][$n] ?? $d; }
 function update_option($n,$v,...$a) { if ($GLOBALS['db_failure']) return false; $GLOBALS['options'][$n]=$v;return true; }
 function admin_url($s) { return 'https://example.test/wp-admin/'.$s; }
@@ -46,4 +48,23 @@ try{Plugin::saveCredential();}catch(Stop $e){}
 check(Credential::read()===$before,'invalid replacement preserves credential');
 check(Plugin::settings()['mode']==='off','invalid replacement stays off');
 check(!isset($_POST['token']),'invalid input removed');
+foreach (['admin','nonce'] as $gate) {
+    reset_case(); $_POST=['mode'=>'off']; $GLOBALS[$gate]=false;
+    try { Plugin::saveSettings(); } catch (Stop $e) {}
+    check(Plugin::settings()['mode']==='live',$gate.' blocks mode change');
+}
+reset_case(); $_POST=['mode'=>'off']; $_SERVER['REQUEST_METHOD']='GET';
+try { Plugin::saveSettings(); } catch (Stop $e) {}
+check(Plugin::settings()['mode']==='live','GET blocks mode change');
+foreach ([['live'], 'unexpected'] as $mode) {
+    reset_case(); $_POST=['mode'=>$mode];
+    try { Plugin::saveSettings(); } catch (Stop $e) {}
+    check(Plugin::settings()['mode']==='live','malformed mode blocks mutation');
+}
+reset_case(); $_POST=['mode'=>'live']; $GLOBALS['options']['cs_newsletter_settings']['mode']='off';
+try { Plugin::saveSettings(); } catch (Stop $e) {}
+check(Plugin::settings()['mode']==='off','unverified integration cannot enable delivery');
+reset_case(); $_POST=['mode'=>'off'];
+try { Plugin::saveSettings(); } catch (Redirect $e) {}
+check(Plugin::settings()['mode']==='off','authorized POST can stop delivery');
 echo "PASS $tests admin handler checks (mocked gates; no HTTP)\n";

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/fixture.php';
 // Standalone mocked WordPress runtime. No database, HTTP, email, or production option mutations.
-define('ABSPATH','/unused/'); define('DB_NAME','offline-test'); define('ARRAY_A','ARRAY_A');
+ define('DB_NAME','offline-test'); define('ARRAY_A','ARRAY_A');
 define('AUTH_KEY',str_repeat('test-only-auth-key-',4)); define('SECURE_AUTH_KEY',str_repeat('test-only-secure-key-',4));
 function register_activation_hook(...$a) {} function register_deactivation_hook(...$a) {}
 function add_filter(...$a) {} function add_action(...$a) {}
@@ -29,7 +29,11 @@ function wp_remote_request($url,$args) {
         if ($GLOBALS['fault']==='missing_dnd') unset($contact['dnd']);
         if ($GLOBALS['fault']==='email_suppressed') $contact['dndSettings']=['Email'=>['status'=>'active']];
         if ($GLOBALS['fault']==='unsubscribe_before_send' && $GLOBALS['searches']>1) $contact['dnd']=true;
+        if ($GLOBALS['fault']==='malformed_email_dnd') $contact['dndSettings']=['Email'=>'active'];
         $data=['contacts'=>[$contact]];
+        if ($GLOBALS['fault']==='malformed_contact') $data['contacts']=['invalid'];
+        if ($GLOBALS['fault']==='malformed_contact_id') $data['contacts'][0]['id']=['invalid'];
+        if ($GLOBALS['fault']==='malformed_contact_list') $data['contacts']=['unexpected'=>$contact];
     }
     elseif ($path==='/contacts/contact-test') throw new RuntimeException('Individual endpoint must not replace explicit search consent');
     elseif (str_ends_with($path,'/schedule')) {
@@ -54,15 +58,15 @@ function wp_remote_request($url,$args) {
 }
 #[AllowDynamicProperties] class WP_Post {}
 class FakeDB {
-    public $prefix='test_'; public $jobs=[]; public $lock=true;
+    public $prefix='test_'; public $jobs=[]; public $lock=true; public $write_result=null;
     function prepare($sql,...$args) { return json_encode([$sql,$args]); }
     function get_var($sql) { return $this->lock ? 1 : 0; }
-    function get_row($q,$mode) { [$sql,$a]=json_decode($q,true);return $this->jobs[$a[0]] ?? null; }
-    function update($table,$data,$where) { $id=$where['post_id']; if (!isset($this->jobs[$id])) return 0; $this->jobs[$id]=array_merge($this->jobs[$id],$data);return 1; }
+    function get_row($q,$mode) { [$sql,$a]=json_decode($q,true);return $this->jobs[$a[1]] ?? null; }
+    function update($table,$data,$where) { if ($this->write_result !== null) return $this->write_result; $id=$where['post_id']; if (!isset($this->jobs[$id])) return 0; $this->jobs[$id]=array_merge($this->jobs[$id],$data);return 1; }
     function query($q) {
         [$sql,$a]=json_decode($q,true);
-        if (str_starts_with($sql,'INSERT IGNORE') && !isset($this->jobs[$a[0]])) {
-            $this->jobs[$a[0]]=['post_id'=>$a[0],'state'=>$a[1],'due_at'=>$a[2],'note'=>$a[3],'campaign_id'=>'','attempts'=>0];
+        if (str_starts_with($sql,'INSERT IGNORE') && !isset($this->jobs[$a[1]])) {
+            $this->jobs[$a[1]]=['post_id'=>$a[1],'state'=>$a[2],'due_at'=>$a[3],'note'=>$a[4],'campaign_id'=>'','attempts'=>0];
         }
         return 1;
     }
@@ -80,7 +84,7 @@ function reset_case($mode='live',$fault='') {
     $GLOBALS['post']=new WP_Post();
     foreach (['ID'=>90000001,'post_type'=>'post','post_status'=>'publish','post_password'=>'','post_title'=>'Useful test article',
         'post_excerpt'=>'Read this useful guide before you change the way your team connects to work.'] as $k=>$v) $GLOBALS['post']->$k=$v;
-    $wpdb->lock=true;$wpdb->jobs=[90000001=>['post_id'=>90000001,'state'=>'queued','due_at'=>0,'campaign_id'=>'','attempts'=>0]];
+    $wpdb->lock=true;$wpdb->write_result=null;$wpdb->jobs=[90000001=>['post_id'=>90000001,'state'=>'queued','due_at'=>0,'campaign_id'=>'','attempts'=>0]];
 }
 reset_case(); Plugin::process(90000001);
 check($wpdb->jobs[90000001]['state']==='submitted','successful mock send');
@@ -98,8 +102,13 @@ reset_case();$GLOBALS['post']->post_excerpt='';Plugin::process(90000001);check($
 reset_case();$GLOBALS['post']->post_status='draft';Plugin::process(90000001);check($GLOBALS['requests']===0,'unpublished article held');
 reset_case();$GLOBALS['skip']='1';Plugin::process(90000001);check($GLOBALS['requests']===0,'opt-out held');
 reset_case('live','no_recipients');Plugin::process(90000001);check($wpdb->jobs[90000001]['state']==='skipped' && !$GLOBALS['creates'],'no eligible subscribers no campaign');
-foreach (['missing_dnd','email_suppressed'] as $fault) {
+foreach (['missing_dnd','email_suppressed','malformed_email_dnd','malformed_contact','malformed_contact_id','malformed_contact_list'] as $fault) {
     reset_case('live',$fault);Plugin::process(90000001);check(!$GLOBALS['creates'] && !$GLOBALS['sends'],$fault.' fails closed');
+}
+foreach ([0,false] as $write_result) {
+    reset_case();$wpdb->write_result=$write_result;
+    try { Plugin::process(90000001); } catch (RuntimeException $e) {}
+    check(!$GLOBALS['creates'] && !$GLOBALS['sends'],'unwritten ledger state blocks mutating API requests');
 }
 reset_case('live','unsubscribe_before_send');Plugin::process(90000001);check($GLOBALS['creates']===1 && !$GLOBALS['sends'],'fresh opt-out prevents send');
 reset_case('live','firebase_content');Plugin::process(90000001);check($GLOBALS['sends']===1,'verified location-specific Firebase content supported');

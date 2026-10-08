@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0-alpha.3 — WordPress.org readiness review
+
+- Prepare the distinctive ReadySpace Newsletter for UltimateSales.AI name and directory readme, service/data-flow disclosures and separate directory artwork.
+- Reject malformed mode requests and require POST for mode/recheck operations.
+- Fail closed when the send ledger cannot durably record a transition or the initial archive cannot be excluded.
+- Build deterministic allowlisted review packages under the proposed directory slug; preserve legacy options, hooks, ledger and API endpoints.
+- Remains an alpha: licence approval, provider acceptance and final service policies are release gates, not resolved by this version number.
+
 ## 0.3.0-alpha.2 — white-label naming
 
 - Use UltimateSales.AI in plugin descriptions, administrator labels, status/error messages, repository documentation and public project title.

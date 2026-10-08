@@ -1,5 +1,6 @@
 <?php
 namespace CleverSpeed\Newsletter;
+defined('ABSPATH') || exit;
 
 final class Client {
     private const BASE = 'https://services.leadconnectorhq.com';
@@ -19,7 +20,7 @@ final class Client {
         $status = wp_remote_retrieve_response_code($response);
         if ($status < 200 || $status >= 300) {
             // Never persist response bodies: they can contain contact data or sensitive diagnostics.
-            throw new \RuntimeException('UltimateSales.AI returned HTTP ' . $status . '; review required.');
+            throw new \RuntimeException('UltimateSales.AI returned HTTP ' . (int) $status . '; review required.');
         }
         $data = json_decode(wp_remote_retrieve_body($response), true);
         if (!is_array($data)) throw new \RuntimeException('Unexpected UltimateSales.AI response; review required.');
@@ -39,10 +40,11 @@ final class Client {
             $data = $this->request('POST', '/contacts/search', ['locationId' => Config::get('location_id'),
                 'page' => $page, 'pageLimit' => 100,
                 'filters' => [['field' => 'tags', 'operator' => 'contains', 'value' => Config::get('confirmed_tag')]]], '2021-07-28');
-            if (!isset($data['contacts']) || !is_array($data['contacts'])) throw new \RuntimeException('Unexpected contacts response; email held.');
+            if (!isset($data['contacts']) || !is_array($data['contacts']) || !array_is_list($data['contacts'])) throw new \RuntimeException('Unexpected contacts response; email held.');
             foreach ($data['contacts'] as $contact) {
+                if (!is_array($contact)) throw new \RuntimeException('Unexpected contact record; email held.');
                 $id = $contact['id'] ?? '';
-                if (!$id || isset($seen[$id])) throw new \RuntimeException('Contact pagination is incomplete or repeated; email held.');
+                if (!is_string($id) || $id === '' || isset($seen[$id])) throw new \RuntimeException('Contact pagination is incomplete or repeated; email held.');
                 $seen[$id] = true;
                 // Search returns explicit DND/channel state; Get Contact may omit it.
                 // The worker repeats this fresh search immediately before scheduling.
@@ -72,7 +74,7 @@ final class Client {
             throw new \RuntimeException('Remote campaign is not the expected draft; email held.');
         }
         $bodyUrl = $campaign['editorContentUrl'] ?? '';
-        $parts = parse_url($bodyUrl);
+        $parts = wp_parse_url($bodyUrl);
         $googleStorage = ($parts['host'] ?? '') === 'storage.googleapis.com';
         $firebaseStorage = ($parts['host'] ?? '') === 'firebasestorage.googleapis.com' &&
             str_starts_with(rawurldecode($parts['path'] ?? ''), '/v0/b/highlevel-backend.appspot.com/o/location/' . Config::get('location_id') . '/emails/');

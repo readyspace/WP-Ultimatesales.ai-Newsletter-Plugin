@@ -1,5 +1,6 @@
 <?php
 namespace CleverSpeed\Newsletter;
+defined('ABSPATH') || exit;
 
 /** Private per-site configuration. No pilot/customer defaults are shipped. */
 final class Config {
@@ -34,7 +35,7 @@ final class Config {
             if (!filter_var($c[$key], FILTER_VALIDATE_EMAIL)) throw new \RuntimeException('Invalid sender or reply address.');
         }
         foreach (['cms_origin','public_origin','privacy_url'] as $key) {
-            $p = parse_url($c[$key]);
+            $p = wp_parse_url($c[$key]);
             if (!$p || ($p['scheme'] ?? '') !== 'https' || empty($p['host']) || isset($p['user']) || isset($p['pass']) ||
                 isset($p['port']) || isset($p['query']) || isset($p['fragment']) || !filter_var($c[$key], FILTER_VALIDATE_URL)) {
                 throw new \RuntimeException('Use clean HTTPS origins and privacy URL.');

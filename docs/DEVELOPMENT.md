@@ -13,9 +13,9 @@ Internal `CleverSpeed\Newsletter`, `cs_*` and `cleverspeed_*` identifiers are re
 
 ## Test and package
 
-Run `bash scripts/test.sh` with PHP 8.1+ and required extensions. The script lints PHP and runs five isolated suites covering policy, worker, credential, admin handlers and configuration. Tests use fictional domains/contacts and mocked HTTP. Do not substitute a live WordPress bootstrap.
+Run `bash scripts/test.sh` with PHP 8.1+ and required extensions. The script lints PHP and runs six isolated suites covering policy, worker, credential, admin handlers, configuration and activation. Tests use fictional domains/contacts and mocked HTTP. Do not substitute a live WordPress bootstrap.
 
-Run `bash scripts/package.sh` to build the installable ZIP from an explicit file list. Tests, documentation, configuration, Git history and local operational files are excluded. This alpha has no Composer/npm runtime dependencies, bundled fonts or images. Review both source and archive before releasing.
+Run `bash scripts/package.sh --candidate` to build the isolated-review ZIP from an explicit file list. `--submission` additionally requires approved licence and verified compatibility metadata. Neither build mode replaces the manual release readiness checks. The package uses the proposed directory slug while preserving legacy data identifiers. Tests, operator documentation, private configuration, Git history and local operational files are excluded; directory readme and an approved licence are included. This alpha has no Composer/npm runtime dependencies, bundled fonts or images. Review both source and archive before releasing.
 
 GitHub Actions runs isolated checks only. It does not deploy, obtain provider credentials, create campaigns or send email. Passing CI does not prove browser-admin security, concurrent database behaviour, provider schemas, recipient eligibility in a real account or email-client rendering.
 

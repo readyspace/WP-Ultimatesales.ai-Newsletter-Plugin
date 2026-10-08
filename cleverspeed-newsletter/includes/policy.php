@@ -1,30 +1,35 @@
 <?php
 namespace CleverSpeed\Newsletter;
+defined('ABSPATH') || exit;
 require_once __DIR__ . '/config.php';
 
 final class Policy {
 
     public static function plain(string $value): string {
-        return trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($value), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?? '');
+        return trim(preg_replace('/\s+/u', ' ', html_entity_decode(wp_strip_all_tags($value), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?? '');
     }
 
     public static function eligible(array $contact): bool {
         if (!Config::ready()) return false;
-        if (($contact['locationId'] ?? '') !== Config::get('location_id') || empty($contact['id']) ||
-            !filter_var($contact['email'] ?? '', FILTER_VALIDATE_EMAIL) ||
-            !in_array(Config::get('confirmed_tag'), $contact['tags'] ?? [], true)) {
+        $tags = $contact['tags'] ?? null;
+        if (($contact['locationId'] ?? '') !== Config::get('location_id') ||
+            !is_string($contact['id'] ?? null) || $contact['id'] === '' ||
+            !is_string($contact['email'] ?? null) || !filter_var($contact['email'], FILTER_VALIDATE_EMAIL) ||
+            !is_array($tags) || !in_array(Config::get('confirmed_tag'), $tags, true)) {
             return false;
         }
         // Unknown global DND is not permission to send.
         if (!array_key_exists('dnd', $contact) || $contact['dnd'] !== false) {
             return false;
         }
-        $email = $contact['dndSettings']['Email']['status'] ?? null;
-        if ($email !== null && !in_array($email, ['inactive', 'disabled'], true)) {
-            return false;
+        $channels = array_key_exists('dndSettings', $contact) ? $contact['dndSettings'] : [];
+        if (!is_array($channels)) return false;
+        if (array_key_exists('Email', $channels)) {
+            $email = $channels['Email'];
+            if (!is_array($email) || !in_array($email['status'] ?? null, ['inactive', 'disabled'], true)) return false;
         }
         foreach ([Config::get('pending_tag'), Config::get('unsubscribed_tag')] as $tag) {
-            if (in_array($tag, $contact['tags'], true)) return false;
+            if (in_array($tag, $tags, true)) return false;
         }
         return true;
     }
@@ -40,8 +45,8 @@ final class Policy {
     }
 
     public static function publicUrl(string $permalink): string {
-        $parts = parse_url($permalink);
-        if (!$parts || !in_array($parts['host'] ?? '', [parse_url(Config::get('cms_origin'), PHP_URL_HOST), parse_url(Config::get('public_origin'), PHP_URL_HOST)], true) ||
+        $parts = wp_parse_url($permalink);
+        if (!$parts || !in_array($parts['host'] ?? '', [wp_parse_url(Config::get('cms_origin'), PHP_URL_HOST), wp_parse_url(Config::get('public_origin'), PHP_URL_HOST)], true) ||
             ($parts['scheme'] ?? '') !== 'https' || isset($parts['query']) || isset($parts['fragment']) ||
             isset($parts['user']) || isset($parts['port'])) {
             throw new \RuntimeException('The post must have a clean configured-site HTTPS permalink.');
