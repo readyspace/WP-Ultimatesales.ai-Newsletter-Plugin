@@ -3,7 +3,7 @@ Contributors: readyspace
 Tags: newsletter, email, headless, automation
 Requires at least: 6.9
 Tested up to: 7.1
-Stable tag: 0.3.0
+Stable tag: 0.3.1
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -14,7 +14,7 @@ Send article excerpts through your UltimateSales.AI account, with subscriber che
 
 Connect a single-site WordPress backend to your UltimateSales.AI account. Headless frontends work when public articles pass the checks below.
 
-Version 0.3.0 uses the audited 0.3.0-alpha.3 implementation with numeric metadata for WordPress.org. ReadySpace authorized GPLv2 or later and confirmed its rights.
+Sending requires operator setup and acceptance.
 
 Five minutes after a post's first publication, the plugin checks its public page and uses its explicit 10-150 word Excerpt. Existing published posts, edits and republishes do not resend. Missing excerpts or failed checks hold the job.
 
@@ -62,7 +62,7 @@ Service information and policies:
 * Privacy notice: https://ultimatesales.ai/privacy
 * Messaging policy: https://ultimatesales.ai/messaging-policy
 
-ReadySpace approved these policies and URLs on 8 October 2026. Account retention and tracking depend on service practices/settings; review the linked notices and your site's practices.
+Account retention and tracking depend on service practices/settings; review the linked notices and your site's practices.
 
 == Installation ==
 
@@ -75,22 +75,22 @@ ReadySpace approved these policies and URLs on 8 October 2026. Account retention
 
 = Private configuration example =
 
-CMS/public origins can match on conventional WordPress. The privacy URL must exist on the public origin.
+Capitalized values below are placeholders. CMS/public origins can match on conventional WordPress. Set privacy_url to your publication's live privacy notice on public_origin.
 
     define('RS_NEWSLETTER_CONFIG', [
         'location_id' => 'YOUR_LOCATION_ID',
         'confirmed_tag' => 'newsletter-confirmed',
         'pending_tag' => 'newsletter-pending',
         'unsubscribed_tag' => 'newsletter-unsubscribed',
-        'cms_origin' => 'https://cms.example.org',
-        'public_origin' => 'https://example.org',
+        'cms_origin' => 'YOUR_HTTPS_CMS_ORIGIN',
+        'public_origin' => 'YOUR_HTTPS_PUBLIC_ORIGIN',
         'brand' => 'Your publication',
         'from_email' => 'newsletter@example.org',
         'reply_email' => 'reply@example.org',
         'timezone' => 'UTC',
         'legal_name' => 'Your legal operator',
         'postal_address' => 'Your accurate postal address',
-        'privacy_url' => 'https://example.org/privacy/',
+        'privacy_url' => 'YOUR_PUBLIC_PRIVACY_NOTICE_URL',
         'preview_text' => 'Practical ideas from our latest article.',
     ]);
 
@@ -127,6 +127,10 @@ Deactivation clears the queue hook. There is no automatic uninstall cleanup: set
 Complete staging acceptance and keep a private rollback backup first. Preserve the pilot folder, options, hooks, ledger and metadata. Legacy cleverspeed-newsletter identifiers remain. The proposed directory slug may require reviewed folder migration for directory updates.
 
 == Changelog ==
+
+= 0.3.1 =
+
+* Replace fictional setup URLs with explicit placeholders; service policy links remain above.
 
 = 0.3.0 =
 
