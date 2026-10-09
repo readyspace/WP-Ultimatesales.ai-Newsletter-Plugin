@@ -21,7 +21,7 @@ Back up WordPress files and database privately. Do not clone real subscribers or
 
 Build the installable ZIP with `bash scripts/package.sh`, then upload and activate it in WordPress. Activation creates the ledger and excludes all already-published posts. Do not delete that ledger to retry or reinstall.
 
-Copy the following **fictional** example into private `wp-config.php` before WordPress loads. Replace every value for your site. Never commit the populated configuration. The public and CMS origins may be identical on non-headless sites. They must use HTTPS, without paths, ports, query strings or trailing slashes. Subdirectory WordPress installations are not supported in this alpha.
+Copy the following **fictional** example into private `wp-config.php` before WordPress loads. Replace every value for your site; capitalized values are placeholders, not URLs. Never commit the populated configuration. The public and CMS origins may be identical on non-headless sites. They must use HTTPS, without paths, ports, query strings or trailing slashes. Subdirectory WordPress installations are not supported in this alpha.
 
 ```php
 define('RS_NEWSLETTER_CONFIG', [
@@ -29,20 +29,20 @@ define('RS_NEWSLETTER_CONFIG', [
     'confirmed_tag' => 'newsletter-confirmed',
     'pending_tag' => 'newsletter-pending',
     'unsubscribed_tag' => 'newsletter-unsubscribed',
-    'cms_origin' => 'https://cms.example.org',
-    'public_origin' => 'https://example.org',
+    'cms_origin' => 'YOUR_HTTPS_CMS_ORIGIN',
+    'public_origin' => 'YOUR_HTTPS_PUBLIC_ORIGIN',
     'brand' => 'Your publication',
     'from_email' => 'newsletter@example.org',
     'reply_email' => 'reply@example.org',
     'timezone' => 'UTC',
     'legal_name' => 'Your legal operator',
     'postal_address' => 'Your accurate postal address',
-    'privacy_url' => 'https://example.org/privacy/',
+    'privacy_url' => 'YOUR_PUBLIC_PRIVACY_NOTICE_URL',
     'preview_text' => 'Practical ideas from our latest article.',
 ]);
 ```
 
-These are required configuration values, not verified promises. The sender must be approved by your provider. The privacy page must exist and match your actual practices. Any configuration change requires renewed verification. Stop workers and switch mode Off before changing configuration or credentials.
+These are required configuration values, not verified promises. The sender must be approved by your provider. Set `privacy_url` to your publication's live privacy notice on `public_origin`; it must match your actual practices. Any configuration change requires renewed verification. Stop workers and switch mode Off before changing configuration or credentials.
 
 Open **Tools → ReadySpace Newsletter**. Enter the token in its password field and choose **Save credential and keep sending off**. This requires an administrator, HTTPS and a valid WordPress nonce. The token is never displayed. A successful save proves storage, not connectivity. Do not put the token in the configuration example, shell history, issue tracker or chat.
 

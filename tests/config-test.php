@@ -1,4 +1,6 @@
 <?php
+if (!defined('ABSPATH')) define('ABSPATH', '/unused/');
+require_once __DIR__ . '/wp-functions.php';
 require $argv[1] . '/includes/config.php';
 use CleverSpeed\Newsletter\Config;
 $tests = 0;
