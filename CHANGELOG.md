@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.3.2 — name and description update (unreleased)
+## 0.3.2 — name and description update
 
+- Approved and published on 11 October 2026 at SVN revision 3739532. The public seven-file package, directory name/version and all four PNG images were verified against the approved release.
 - Rename the plugin, administrator screen and directory banner to Newsletter for UltimateSales.AI.
 - Explain email notifications, article links, supported WordPress setups and setup needs in plain language. Mark other channels as future plans, not current features.
 - Retain the approved WordPress.org slug, plugin filename, text domain, ReadySpace author and every integration/storage identifier.

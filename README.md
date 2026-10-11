@@ -2,7 +2,7 @@
 
 By **ReadySpace**. Let your UltimateSales.AI email subscribers know when you publish a new WordPress blog post. After setup, the plugin can automatically prepare an email with the post title, a short summary and a link to the full article on your website. It supports standard WordPress and headless sites whose public article paths match WordPress's post links and pass the required page checks. An UltimateSales.AI account and developer or administrator setup are required.
 
-**Next release: 0.3.2 (name and description update; not yet published). Operator setup required.** This retains the published 0.3.1 implementation, changes its display name to Newsletter for UltimateSales.AI and explains its notification features in plain language. The approved WordPress.org slug and integration identifiers remain unchanged. This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
+**Published release: 0.3.2 (11 October 2026). Operator setup required.** Published on WordPress.org at SVN revision `3739532`; the public package and all directory images were verified against the approved files. This retains the published 0.3.1 implementation, changes its display name to Newsletter for UltimateSales.AI and explains its notification features in plain language. The approved WordPress.org slug and integration identifiers remain unchanged. This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
 
 ## What it does
 
@@ -29,7 +29,7 @@ ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, 
 3. Read [operations and recovery](docs/OPERATIONS.md) before enabling delivery.
 4. See [development](docs/DEVELOPMENT.md) and [contributing](CONTRIBUTING.md) to collaborate.
 
-The source directory remains `cleverspeed-newsletter`. Directory packages retain the approved slug `readyspace-newsletter-for-ultimatesales-ai` and existing [WordPress.org listing](https://wordpress.org/plugins/readyspace-newsletter-for-ultimatesales-ai/), with the next display name **Newsletter for UltimateSales.AI**. Legacy database options, queue records, hooks and duplicate-send history retain their identifiers. Existing pilot installations need an explicit folder migration; never activate both copies. See [WordPress.org readiness](docs/WORDPRESS-ORG-READINESS.md).
+The source directory remains `cleverspeed-newsletter`. Directory packages retain the approved slug `readyspace-newsletter-for-ultimatesales-ai` and existing [WordPress.org listing](https://wordpress.org/plugins/readyspace-newsletter-for-ultimatesales-ai/), with the display name **Newsletter for UltimateSales.AI**. Legacy database options, queue records, hooks and duplicate-send history retain their identifiers. Existing pilot installations need an explicit folder migration; never activate both copies. See [WordPress.org readiness](docs/WORDPRESS-ORG-READINESS.md).
 
 ## Requirements
 
@@ -43,7 +43,7 @@ This candidate has isolated PHP 8.1/8.3/8.4 regression coverage and WordPress 6.
 
 ## Downloads
 
-Use GitHub's **Code → Download ZIP** to download the source. For an isolated-test ZIP, run `bash scripts/package.sh --candidate`; its filename is marked `REVIEW-ONLY`. After all remaining readiness blockers are resolved, `bash scripts/package.sh --submission` checks the licence and compatibility metadata before creating a submission package. Upload only a reviewed build through WordPress → Plugins → Add New → Upload Plugin. Do not upload the whole repository ZIP as the plugin.
+Install the current release from [WordPress.org](https://wordpress.org/plugins/readyspace-newsletter-for-ultimatesales-ai/) through WordPress → Plugins → Add New, or download its versioned install ZIP from the listing. Use GitHub's **Code → Download ZIP** to download the source. For an isolated-test ZIP, run `bash scripts/package.sh --candidate`; its filename is marked `REVIEW-ONLY`. For a future release, `bash scripts/package.sh --submission` checks the licence and compatibility metadata before creating a submission package; review and validate that build before publishing. Upload only a reviewed build through WordPress → Plugins → Add New → Upload Plugin. Do not upload the whole repository ZIP as the plugin.
 
 ## Licence
 
