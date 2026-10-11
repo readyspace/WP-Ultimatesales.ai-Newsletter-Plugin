@@ -2,7 +2,7 @@
 
 By **ReadySpace**. A direct WordPress → UltimateSales.AI newsletter bridge for UltimateSales.AI (https://ultimatesales.ai) accounts. Any editor can write the post and its Excerpt; no ChatGPT, AI summariser, Next.js email code or WordPress SMTP is required.
 
-**Directory review update: 0.3.1. Operator setup required.** This retains the audited 0.3.0 implementation and replaces fictional setup URLs in the readme following WordPress.org's review. This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
+**Next release: 0.3.2 (display-name update; not yet published). Operator setup required.** This retains the published 0.3.1 implementation and changes its display name to Newsletter for UltimateSales.AI. The approved WordPress.org slug and integration identifiers remain unchanged. This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
 
 ## What it does
 
@@ -25,7 +25,7 @@ The plugin does **not** create signup forms, confirmation workflows, authenticat
 3. Read [operations and recovery](docs/OPERATIONS.md) before enabling delivery.
 4. See [development](docs/DEVELOPMENT.md) and [contributing](CONTRIBUTING.md) to collaborate.
 
-The source directory remains `cleverspeed-newsletter`. Directory candidate packages use `readyspace-newsletter-for-ultimatesales-ai`, matching the proposed public name **ReadySpace Newsletter for UltimateSales.AI**. Legacy database options, queue records, hooks and duplicate-send history retain their identifiers. Existing pilot installations need an explicit folder migration; never activate both copies. See [WordPress.org readiness](docs/WORDPRESS-ORG-READINESS.md).
+The source directory remains `cleverspeed-newsletter`. Directory packages retain the approved slug `readyspace-newsletter-for-ultimatesales-ai` and existing [WordPress.org listing](https://wordpress.org/plugins/readyspace-newsletter-for-ultimatesales-ai/), with the next display name **Newsletter for UltimateSales.AI**. Legacy database options, queue records, hooks and duplicate-send history retain their identifiers. Existing pilot installations need an explicit folder migration; never activate both copies. See [WordPress.org readiness](docs/WORDPRESS-ORG-READINESS.md).
 
 ## Requirements
 

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="772" height="250" viewBox="0 0 772 250" role="img" aria-label="Newsletter for UltimateSales.AI: WordPress excerpts to your newsletter">
+  <rect width="772" height="250" fill="#ecf2f4"/>
+  <svg x="38" y="52" width="147" height="147" viewBox="0 0 256 256">
+    <rect width="256" height="256" rx="51" fill="#192d40"/>
+    <rect x="51" y="79" width="154" height="100" rx="10" fill="none" stroke="#fff" stroke-width="7"/>
+    <path d="M54 84 128 136 202 84" fill="none" stroke="#fff" stroke-width="7"/>
+    <circle cx="202" cy="189" r="36" fill="#247264"/>
+    <path d="M183 189h32m-13-13 13 13-13 13" fill="none" stroke="#fff" stroke-width="7"/>
+  </svg>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="218" y="69" font-size="32" fill="#192d40">Newsletter</text>
+    <text x="218" y="110" font-size="24" fill="#247264">for UltimateSales.AI</text>
+    <text x="218" y="156" font-size="18" fill="#38556a">WordPress excerpts to your newsletter</text>
+    <text x="218" y="188" font-size="13" fill="#4e6577">Draft review · Subscriber eligibility · Send ledger</text>
+  </g>
+</svg>

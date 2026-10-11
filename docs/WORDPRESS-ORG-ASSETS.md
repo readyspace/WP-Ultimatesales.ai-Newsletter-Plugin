@@ -11,6 +11,7 @@ The candidate includes the following original files at the exact dimensions in t
 | File | Dimensions | Notes |
 | --- | --- | --- |
 | `icon.svg` | Scalable; current viewBox 256 by 256 | Original vector design. Include a PNG fallback when using SVG. |
+| `banner.svg` | Editable source, 772 by 250 viewBox | Export the two PNG banner sizes below; retain this source in Git. |
 | `icon-128x128.png` | 128 by 128 | Normal icon/fallback. |
 | `icon-256x256.png` | 256 by 256 | High-resolution icon. |
 | `banner-772x250.png` | 772 by 250 | Normal directory banner. |
@@ -24,7 +25,7 @@ Capture actual plugin screens from an isolated staging site using fictional conf
 
 Suggested captures after the relevant checks pass:
 
-1. `screenshot-1.png`: The Tools -> ReadySpace Newsletter screen with sending Off and no saved credential displayed.
+1. `screenshot-1.png`: The Tools -> UltimateSales.AI Newsletter screen with sending Off and no saved credential displayed.
 2. `screenshot-2.png`: The post newsletter exclusion control and the Excerpt field, using a fictional article.
 3. `screenshot-3.png`: A controlled draft-only job, with fictional/non-sensitive identifiers and actual tested status.
 
@@ -32,6 +33,6 @@ Only add a `== Screenshots ==` section to readme.txt when the corresponding file
 
 ## Release review
 
-Before public submission or SVN upload, confirm the final name/slug, licence rights for all artwork, exact pixel dimensions and file sizes. Inspect each icon/banner at its intended display size and check screenshots against the actual candidate. The repository and readme remain honest about the alpha until production acceptance is complete.
+Before public submission or SVN upload, confirm the final name/slug, licence rights for all artwork, exact pixel dimensions and file sizes. Inspect each icon/banner at its intended display size and check screenshots against the actual candidate. Keep the repository and readme explicit about release and verification status.
 
 Official specifications: [How Your Plugin Assets Work](https://developer.wordpress.org/plugins/wordpress-org/plugin-assets/).

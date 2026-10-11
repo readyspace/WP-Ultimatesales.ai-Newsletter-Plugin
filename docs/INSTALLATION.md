@@ -44,7 +44,7 @@ define('RS_NEWSLETTER_CONFIG', [
 
 These are required configuration values, not verified promises. The sender must be approved by your provider. Set `privacy_url` to your publication's live privacy notice on `public_origin`; it must match your actual practices. Any configuration change requires renewed verification. Stop workers and switch mode Off before changing configuration or credentials.
 
-Open **Tools → ReadySpace Newsletter**. Enter the token in its password field and choose **Save credential and keep sending off**. This requires an administrator, HTTPS and a valid WordPress nonce. The token is never displayed. A successful save proves storage, not connectivity. Do not put the token in the configuration example, shell history, issue tracker or chat.
+Open **Tools → UltimateSales.AI Newsletter**. Enter the token in its password field and choose **Save credential and keep sending off**. This requires an administrator, HTTPS and a valid WordPress nonce. The token is never displayed. A successful save proves storage, not connectivity. Do not put the token in the configuration example, shell history, issue tracker or chat.
 
 ## 3. Maintainer acceptance checks
 

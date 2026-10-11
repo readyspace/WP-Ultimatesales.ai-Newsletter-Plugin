@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.2 — display-name update (unreleased)
+
+- Rename the plugin, administrator screen and directory banner to Newsletter for UltimateSales.AI.
+- Retain the approved WordPress.org slug, plugin filename, text domain, ReadySpace author and every integration/storage identifier.
+- No newsletter, consent, credential, scheduling or ledger behavior changes.
+
+## 0.3.1 — WordPress.org first public release
+
+- Replace fictional setup URLs with explicit placeholders; retain the actual service policy links.
+- Approved and published on 10 October 2026 at SVN revision 3738304. Public package and all four directory images verified against the reviewed source.
+
+## 0.3.0 — numeric directory submission
+
+- Apply numeric release metadata to the audited implementation and submit the owner-approved GPLv2-or-later package.
+
 ## 0.3.0-alpha.3 — WordPress.org readiness review
 
 - Prepare the distinctive ReadySpace Newsletter for UltimateSales.AI name and directory readme, service/data-flow disclosures and separate directory artwork.

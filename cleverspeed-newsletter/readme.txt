@@ -1,9 +1,9 @@
-=== ReadySpace Newsletter for UltimateSales.AI ===
+=== Newsletter for UltimateSales.AI ===
 Contributors: readyspace
 Tags: newsletter, email, headless, automation
 Requires at least: 6.9
 Tested up to: 7.1
-Stable tag: 0.3.1
+Stable tag: 0.3.2
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -70,7 +70,7 @@ Account retention and tracking depend on service practices/settings; review the 
 2. Create a location-level private integration with contacts.readonly, users.readonly, emails/campaigns.readonly and emails/campaigns.write. Confirm endpoint access; keep the token private.
 3. Upload the installable ZIP through Plugins -> Add New Plugin -> Upload Plugin and activate. Do not upload the whole repository ZIP. Activation excludes the archive; preserve its ledger.
 4. Add the fictional example below to private wp-config.php before WordPress loads, replacing every value. Never commit populated settings or credentials.
-5. In Tools -> ReadySpace Newsletter, enter the token in the password field and select Save credential and keep sending off. Storage is not connection verification.
+5. In Tools -> UltimateSales.AI Newsletter, enter the token in the password field and select Save credential and keep sending off. Storage is not connection verification.
 6. Complete acceptance while Off. Configure one scoped scheduler and verify a controlled new-post job.
 
 = Private configuration example =
@@ -128,13 +128,17 @@ Complete staging acceptance and keep a private rollback backup first. Preserve t
 
 == Changelog ==
 
+= 0.3.2 =
+
+* Rename to Newsletter for UltimateSales.AI; keep the published slug and integration unchanged.
+
 = 0.3.1 =
 
 * Replace fictional setup URLs with explicit placeholders; service policy links remain above.
 
 = 0.3.0 =
 
-* Directory preparation candidate with ReadySpace naming and external-service/install documentation.
-* Numeric release metadata required by WordPress.org; audited implementation retained.
+* Directory preparation with ReadySpace naming and service/install documentation.
+* Numeric WordPress.org release metadata; audited implementation retained.
 * Hardened mode requests, durable ledger transitions and malformed consent responses while retaining legacy integration identifiers.
 * GPLv2-or-later and policy URLs approved; prior provider/host acceptance reused.

@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: ReadySpace Newsletter for UltimateSales.AI
+ * Plugin Name: Newsletter for UltimateSales.AI
  * Description: Direct WordPress-to-UltimateSales.AI article newsletters, with consent checks and a durable send ledger.
- * Version: 0.3.1
+ * Version: 0.3.2
  * Plugin URI: https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin
  * Requires at least: 6.9
  * Requires PHP: 8.1
@@ -165,13 +165,13 @@ final class Plugin {
         }
     }
 
-    public static function menu(): void { add_management_page('ReadySpace Newsletter Bridge','ReadySpace Newsletter','manage_options','cs-newsletter',[self::class,'page']); }
+    public static function menu(): void { add_management_page('Newsletter for UltimateSales.AI','UltimateSales.AI Newsletter','manage_options','cs-newsletter',[self::class,'page']); }
     public static function page(): void {
         if (!current_user_can('manage_options')) return;
         $s = self::settings();
         global $wpdb;
         $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE state<>'excluded' ORDER BY updated_at DESC LIMIT 30",self::table()),ARRAY_A);
-        echo '<div class="wrap"><h1>ReadySpace Newsletter for UltimateSales.AI</h1><p>By ReadySpace · Version 0.3.1 · Operator setup required</p><p>WordPress → UltimateSales.AI. No Next.js email logic and no WordPress SMTP.</p>';
+        echo '<div class="wrap"><h1>Newsletter for UltimateSales.AI</h1><p>By ReadySpace · Version 0.3.2 · Operator setup required</p><p>WordPress → UltimateSales.AI. No Next.js email logic and no WordPress SMTP.</p>';
         echo '<p>Private per-site configuration: ' . (Config::ready() ? 'valid' : 'missing or invalid; see the installation guide') . '.</p>';
         echo '<p>Mode: <strong>' . esc_html($s['mode']) . '</strong>. Private credential: ' . (Client::credentialReady() ? 'saved securely' : 'not ready') .
             '. Connection verification: ' . (self::verified() ? 'passed' : 'pending') . '.</p>';
