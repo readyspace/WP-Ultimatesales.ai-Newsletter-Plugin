@@ -1,8 +1,8 @@
 # WP UltimateSales.AI Newsletter Plugin
 
-By **ReadySpace**. A direct WordPress → UltimateSales.AI newsletter bridge for UltimateSales.AI (https://ultimatesales.ai) accounts. Any editor can write the post and its Excerpt; no ChatGPT, AI summariser, Next.js email code or WordPress SMTP is required.
+By **ReadySpace**. Let your UltimateSales.AI email subscribers know when you publish a new WordPress blog post. After setup, the plugin can automatically prepare an email with the post title, a short summary and a link to the full article on your website. It supports standard WordPress and headless sites whose public article paths match WordPress's post links and pass the required page checks. An UltimateSales.AI account and developer or administrator setup are required.
 
-**Next release: 0.3.2 (display-name update; not yet published). Operator setup required.** This retains the published 0.3.1 implementation and changes its display name to Newsletter for UltimateSales.AI. The approved WordPress.org slug and integration identifiers remain unchanged. This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
+**Next release: 0.3.2 (name and description update; not yet published). Operator setup required.** This retains the published 0.3.1 implementation, changes its display name to Newsletter for UltimateSales.AI and explains its notification features in plain language. The approved WordPress.org slug and integration identifiers remain unchanged. This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
 
 ## What it does
 
@@ -17,6 +17,10 @@ By **ReadySpace**. A direct WordPress → UltimateSales.AI newsletter bridge for
 - Offers Off, Draft-only and Live modes. Configuration changes invalidate verification.
 
 The plugin does **not** create signup forms, confirmation workflows, authenticated sending domains or newsletters from unconfirmed contacts. Those must already exist in the chosen account.
+
+## Future plans
+
+ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so readers across different channels can find the new article. **Version 0.3.2 supports email only.**
 
 ## Start here
 

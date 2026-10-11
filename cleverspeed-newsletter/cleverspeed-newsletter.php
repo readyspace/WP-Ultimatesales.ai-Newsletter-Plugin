@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Newsletter for UltimateSales.AI
- * Description: Direct WordPress-to-UltimateSales.AI article newsletters, with consent checks and a durable send ledger.
+ * Description: Email your UltimateSales.AI newsletter subscribers when you publish a new WordPress post, with a link to read it.
  * Version: 0.3.2
  * Plugin URI: https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin
  * Requires at least: 6.9

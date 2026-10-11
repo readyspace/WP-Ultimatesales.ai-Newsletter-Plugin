@@ -1,8 +1,9 @@
 # Changelog
 
-## 0.3.2 — display-name update (unreleased)
+## 0.3.2 — name and description update (unreleased)
 
 - Rename the plugin, administrator screen and directory banner to Newsletter for UltimateSales.AI.
+- Explain email notifications, article links, supported WordPress setups and setup needs in plain language. Mark other channels as future plans, not current features.
 - Retain the approved WordPress.org slug, plugin filename, text domain, ReadySpace author and every integration/storage identifier.
 - No newsletter, consent, credential, scheduling or ledger behavior changes.
 
