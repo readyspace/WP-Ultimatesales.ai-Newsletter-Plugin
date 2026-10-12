@@ -2,7 +2,7 @@
 
 By **ReadySpace**. Let your UltimateSales.AI email subscribers know when you publish a new WordPress blog post. After setup, the plugin can automatically prepare an email with the post title, a short summary and a link to the full article on your website. It supports standard WordPress and headless sites whose public article paths match WordPress's post links and pass the required page checks. An UltimateSales.AI account and developer or administrator setup are required.
 
-**Release candidate: 0.3.3 (relative article redirect fix). Operator setup required.** Supports root-relative permanent redirects that only add or remove the final slash on the same public article. Existing settings, credentials, newsletter history, consent and duplicate protections are unchanged. The last verified directory release is 0.3.2 (SVN revision `3739532`).
+**Published release: 0.3.3 (12 October 2026, SVN revision `3740508`). Operator setup required.** Supports root-relative permanent redirects that only add or remove the final slash on the same public article. Existing settings, credentials, newsletter history, consent and duplicate protections are unchanged. The official WordPress.org download was verified file-for-file against the tested release.
 
 ## What it does
 
