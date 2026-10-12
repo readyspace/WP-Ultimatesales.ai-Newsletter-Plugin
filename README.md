@@ -2,7 +2,7 @@
 
 By **ReadySpace**. Let your UltimateSales.AI email subscribers know when you publish a new WordPress blog post. After setup, the plugin can automatically prepare an email with the post title, a short summary and a link to the full article on your website. It supports standard WordPress and headless sites whose public article paths match WordPress's post links and pass the required page checks. An UltimateSales.AI account and developer or administrator setup are required.
 
-**Published release: 0.3.2 (11 October 2026). Operator setup required.** Published on WordPress.org at SVN revision `3739532`; the public package and all directory images were verified against the approved files. This retains the published 0.3.1 implementation, changes its display name to Newsletter for UltimateSales.AI and explains its notification features in plain language. The approved WordPress.org slug and integration identifiers remain unchanged. This public branch removes deployment-specific settings from the earlier single-site pilot. It requires private configuration and maintainer-led provider verification. It has not been deployed over the working pilot. Multisite is not supported.
+**Published release: 0.3.3 (12 October 2026, SVN revision `3740508`). Operator setup required.** Supports root-relative permanent redirects that only add or remove the final slash on the same public article. Existing settings, credentials, newsletter history, consent and duplicate protections are unchanged. The official WordPress.org download was verified file-for-file against the tested release.
 
 ## What it does
 
@@ -20,7 +20,7 @@ The plugin does **not** create signup forms, confirmation workflows, authenticat
 
 ## Future plans
 
-ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so readers across different channels can find the new article. **Version 0.3.2 supports email only.**
+ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so readers across different channels can find the new article. **Version 0.3.3 supports email only.**
 
 ## Start here
 

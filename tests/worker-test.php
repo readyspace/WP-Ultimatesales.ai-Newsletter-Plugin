@@ -10,7 +10,7 @@ function get_option($name,$default=[]) { return $GLOBALS['options'][$name] ?? $d
 function update_option($name,$value,...$a) { $GLOBALS['options'][$name]=$value; return true; }
 function get_post($id) { return $GLOBALS['post']; }
 function get_post_meta(...$a) { return $GLOBALS['skip'] ?? ''; }
-function get_permalink(...$a) { return $GLOBALS['fault']==='slashful_redirect' ? 'https://cms.example.org/test' : 'https://cms.example.org/test/'; }
+function get_permalink(...$a) { return in_array($GLOBALS['fault'],['slashful_redirect','root_relative_slashful_redirect'],true) ? 'https://cms.example.org/test' : 'https://cms.example.org/test/'; }
 function is_wp_error($x) { return $x instanceof Exception; }
 function wp_remote_retrieve_response_code($r) { return $r['code']; }
 function wp_remote_retrieve_body($r) { return $r['body']; }
@@ -20,13 +20,21 @@ function wp_safe_remote_get($url,$args=[]) {
     $GLOBALS['public_requests'][]=[$url,$args];
     $fault=$GLOBALS['fault'];$canonical='https://example.org/test/';
     if ($fault==='slashless_canonical') $canonical='https://example.org/test';
-    if (in_array($fault,['slashless_redirect','second_redirect','redirect_final_noindex','redirect_final_header_noindex'],true)) {
-        if ($url==='https://example.org/test/') return ['code'=>301,'body'=>'','headers'=>['location'=>'https://example.org/test']];
+    if (in_array($fault,['slashless_redirect','root_relative_slashless_redirect','second_redirect','redirect_final_noindex','redirect_final_header_noindex'],true)) {
+        if ($url==='https://example.org/test/') return ['code'=>301,'body'=>'','headers'=>['location'=>$fault==='root_relative_slashless_redirect' ? '/test' : 'https://example.org/test']];
         if ($fault==='second_redirect') return ['code'=>308,'body'=>'','headers'=>['location'=>'https://example.org/test/']];
         $canonical='https://example.org/test';
     }
     if ($fault==='slashful_redirect' && $url==='https://example.org/test') return ['code'=>308,'body'=>'','headers'=>['location'=>'https://example.org/test/']];
+    if ($fault==='root_relative_slashful_redirect' && $url==='https://example.org/test') return ['code'=>308,'body'=>'','headers'=>['location'=>'/test/']];
     $redirects=[
+        'redirect_root_relative_other_path'=>'/other/',
+        'redirect_root_relative_query'=>'/test?q=1',
+        'redirect_root_relative_fragment'=>'/test#section',
+        'redirect_root_relative_same_url'=>'/test/',
+        'redirect_root_relative_double_slash'=>'/test//',
+        'redirect_root_relative_backslash'=>'/\\foreign.example/test',
+        'redirect_path_relative'=>'test',
         'redirect_other_path'=>'https://example.org/other/',
         'redirect_other_origin'=>'https://foreign.example/test',
         'redirect_cms_origin'=>'https://cms.example.org/test',
@@ -138,14 +146,14 @@ check($GLOBALS['send_body']['scheduleConfig']['resend']['enabled']===false,'rese
 check($GLOBALS['searches']===2,'fresh explicit search consent checked before create and before send');
 check(str_contains($GLOBALS['saved_html'],'href="https://example.org/test/"'),'conventional WordPress final-slash canonical preserved');
 Plugin::process(90000001);check($GLOBALS['sends']===1,'completed job cannot resend');
-foreach (['slashless_canonical','slashless_redirect','slashful_redirect'] as $fault) {
+foreach (['slashless_canonical','slashless_redirect','slashful_redirect','root_relative_slashless_redirect','root_relative_slashful_redirect'] as $fault) {
     reset_case('live',$fault);Plugin::process(90000001);
-    $campaignUrl=$fault==='slashful_redirect' ? 'https://example.org/test/' : 'https://example.org/test';
+    $campaignUrl=in_array($fault,['slashful_redirect','root_relative_slashful_redirect'],true) ? 'https://example.org/test/' : 'https://example.org/test';
     check($GLOBALS['creates']===1 && $GLOBALS['sends']===1 && str_contains($GLOBALS['saved_html'],'href="'.$campaignUrl.'"'),$fault.' validated canonical used by campaign');
     check(count($GLOBALS['public_requests'])===($fault==='slashless_canonical' ? 2 : 4),$fault.' bounded public checks repeated before schedule');
     foreach ($GLOBALS['public_requests'] as [$publicUrl,$args]) check($args['redirection']===0 && $args['limit_response_size']===2000000,'manual final-slash route retains response bounds and disables automatic redirects');
 }
-foreach (['redirect_other_path','redirect_other_origin','redirect_cms_origin','redirect_query','redirect_fragment','redirect_auth','redirect_port','redirect_relative','redirect_http','redirect_root','redirect_double_slash','redirect_same_url','temporary_redirect','second_redirect','redirect_final_noindex','redirect_final_header_noindex'] as $fault) {
+foreach (['redirect_root_relative_other_path','redirect_root_relative_query','redirect_root_relative_fragment','redirect_root_relative_same_url','redirect_root_relative_double_slash','redirect_root_relative_backslash','redirect_path_relative','redirect_other_path','redirect_other_origin','redirect_cms_origin','redirect_query','redirect_fragment','redirect_auth','redirect_port','redirect_relative','redirect_http','redirect_root','redirect_double_slash','redirect_same_url','temporary_redirect','second_redirect','redirect_final_noindex','redirect_final_header_noindex'] as $fault) {
     reset_case('live',$fault);Plugin::process(90000001);
     check(!$GLOBALS['creates'] && !$GLOBALS['sends'] && !$GLOBALS['requests'] && $wpdb->jobs[90000001]['state']==='held',$fault.' held before provider API');
     check(count($GLOBALS['public_requests'])===(in_array($fault,['second_redirect','redirect_final_noindex','redirect_final_header_noindex'],true) ? 2 : 1),$fault.' public route requests bounded');
