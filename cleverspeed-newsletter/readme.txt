@@ -1,26 +1,46 @@
-=== ReadySpace Newsletter for UltimateSales.AI ===
+=== Newsletter for UltimateSales.AI ===
 Contributors: readyspace
 Tags: newsletter, email, headless, automation
 Requires at least: 6.9
 Tested up to: 7.1
-Stable tag: 0.3.1
+Stable tag: 0.3.3
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Send article excerpts through your UltimateSales.AI account, with subscriber checks, draft review and a durable newsletter send ledger.
+Email your UltimateSales.AI newsletter subscribers when you publish a new WordPress post, with a link to read it.
 
 == Description ==
 
-Connect a single-site WordPress backend to your UltimateSales.AI account. Headless frontends work when public articles pass the checks below.
+Let your subscribers know when you publish a new blog post.
 
-Sending requires operator setup and acceptance.
+Newsletter for UltimateSales.AI connects your WordPress blog to the email subscribers in your UltimateSales.AI account. After setup, it can automatically send an email about each new post. The email includes the post title, a short summary and a link to read the full article on your website.
 
-Five minutes after a post's first publication, the plugin checks its public page and uses its explicit 10-150 word Excerpt. Existing published posts, edits and republishes do not resend. Missing excerpts or failed checks hold the job.
+= How it works =
 
-It reads subscribers, creates and checks a remote draft and, in Live mode, requests delivery. Off and Draft-only modes are available. Interrupted create/send requests require reconciliation; there is no blind retry. Provider acceptance does not prove mailbox delivery.
+1. Write your blog post in WordPress. Add a 10-150 word summary in its Excerpt field.
+2. Publish the post. The plugin waits five minutes, then checks that readers can open the article on your public website.
+3. With automatic sending enabled, it prepares and checks an email, then asks UltimateSales.AI to send it to your eligible subscribers.
 
-It does not create signup forms, contacts, confirmation workflows or consent; authenticate sending domains; use WordPress SMTP; or replace provider unsubscribe/suppression.
+Emails include sender details, privacy and unsubscribe links. UltimateSales.AI handles delivery; a send request does not guarantee that every email reaches an inbox.
+
+Only first publication starts a notification. Old posts, edits and republishing do not trigger emails. Missing summaries or failed checks pause the notification. Interrupted sends need administrator review before further action.
+
+= Standard and headless WordPress =
+
+The plugin supports standard WordPress sites and headless sites. In a headless site, WordPress manages the posts while a separate website shows them to readers. Email links point to that public website. Its article paths must match WordPress's post links and meet the checks below. Single-site installations only; multisite and subdirectory installations are not supported.
+
+= Before you start =
+
+You need an UltimateSales.AI account, permission to email your subscribers and help from a site administrator or developer to connect and test the service. Service and email charges may apply.
+
+It emails eligible contacts with your confirmed-subscriber tag and skips pending or unsubscribed contacts. Your signup process must record their permission; adding a tag does not create permission.
+
+Sending starts Off. Draft-only mode prepares emails without sending. After testing, Live mode enables automatic sending for future new posts. Signup, sender setup and unsubscribe handling must already work in your account; this plugin does not create them.
+
+= Future plans: more channels =
+
+ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so more readers can find each new article. These features are not available in version 0.3.3.
 
 = Requirements and limitations =
 
@@ -31,7 +51,7 @@ It does not create signup forms, contacts, confirmation workflows or consent; au
 * HTTPS CMS/public origins with no path, port, query, fragment or trailing slash; single-site only, no subdirectory installations.
 * Public articles with matching canonical/H1 and no noindex. Only a final-slash URL difference and one same-origin 301/308 redirect are allowed.
 
-Private configuration and installation verification require an operator; no connection wizard is provided. Reuse applicable 4 October site delivery/unsubscribe/host results and check changed code. New accounts/sites need their own acceptance.
+Private configuration and installation verification require an operator; no connection wizard is provided. New accounts/sites need their own delivery, unsubscribe and host checks.
 
 Source and operating documentation: https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin
 
@@ -69,48 +89,24 @@ Account retention and tracking depend on service practices/settings; review the 
 1. Prepare separate staging and a test location with controlled recipients. Verify sender/domain, legal identity/address, privacy page, consent and unsubscribe suppression.
 2. Create a location-level private integration with contacts.readonly, users.readonly, emails/campaigns.readonly and emails/campaigns.write. Confirm endpoint access; keep the token private.
 3. Upload the installable ZIP through Plugins -> Add New Plugin -> Upload Plugin and activate. Do not upload the whole repository ZIP. Activation excludes the archive; preserve its ledger.
-4. Add the fictional example below to private wp-config.php before WordPress loads, replacing every value. Never commit populated settings or credentials.
-5. In Tools -> ReadySpace Newsletter, enter the token in the password field and select Save credential and keep sending off. Storage is not connection verification.
+4. Add the installation guide's configuration to private wp-config.php before WordPress loads, replacing every placeholder. Never commit populated settings or credentials.
+5. In Tools -> UltimateSales.AI Newsletter, enter the token in the password field and select Save credential and keep sending off. Storage is not connection verification.
 6. Complete acceptance while Off. Configure one scoped scheduler and verify a controlled new-post job.
 
-= Private configuration example =
+= Developer setup guide =
 
-Capitalized values below are placeholders. CMS/public origins can match on conventional WordPress. Set privacy_url to your publication's live privacy notice on public_origin.
+The full private configuration example and verification/scheduler commands are in the installation guide:
+https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin/blob/4c157fa6c580e4fcbe3922f9a43467cfda876865/docs/INSTALLATION.md
 
-    define('RS_NEWSLETTER_CONFIG', [
-        'location_id' => 'YOUR_LOCATION_ID',
-        'confirmed_tag' => 'newsletter-confirmed',
-        'pending_tag' => 'newsletter-pending',
-        'unsubscribed_tag' => 'newsletter-unsubscribed',
-        'cms_origin' => 'YOUR_HTTPS_CMS_ORIGIN',
-        'public_origin' => 'YOUR_HTTPS_PUBLIC_ORIGIN',
-        'brand' => 'Your publication',
-        'from_email' => 'newsletter@example.org',
-        'reply_email' => 'reply@example.org',
-        'timezone' => 'UTC',
-        'legal_name' => 'Your legal operator',
-        'postal_address' => 'Your accurate postal address',
-        'privacy_url' => 'YOUR_PUBLIC_PRIVACY_NOTICE_URL',
-        'preview_text' => 'Practical ideas from our latest article.',
-    ]);
+CMS/public origins can match on standard WordPress. Set privacy_url to your publication's live privacy notice on public_origin. Never put private account settings or credentials in public files.
 
 Stop queue workers and choose Off before changing configuration or credentials. Any configuration change invalidates verification.
 
 = Maintainer acceptance and scheduler =
 
-While Off, verify location/staff identity, scopes and subscriber DND with the actual WordPress HTTP transport. In the test location, create/read a draft; inspect content, sender/footer, article URL and unsubscribe token. Perform an explicitly approved controlled-recipient send; inspect delivery/rendering and unsubscribe suppression. Never log tokens, full contacts or response bodies.
+Follow the guide's account, draft, controlled-delivery and unsubscribe checks while sending is Off. Record verification only after documented acceptance; its administrative command does not perform checks. Test a new post in Draft-only before enabling Live. Existing drafts are not promoted to live sends.
 
-Only after documenting acceptance may a maintainer use this command on the intended installation. It writes the gate without performing checks. Replace VERIFIED_STAFF_ID with the verified ID. Delivery stays Off.
-
-    wp --path=/absolute/path/to/wordpress eval '$s=\CleverSpeed\Newsletter\Plugin::settings(); $s["mode"]="off"; $s["user_id"]="VERIFIED_STAFF_ID"; $s["verified"]=true; $s["verified_config"]=\CleverSpeed\Newsletter\Config::fingerprint(); update_option("cs_newsletter_settings",$s,false);'
-
-Test a controlled first publication in Draft-only. Changing to Live does not promote existing drafts. Enable Live in the admin screen only after acceptance and audience verification; it covers future first publications.
-
-The every-minute hook is cleverspeed_newsletter_tick. Low-traffic/headless sites can use a scoped scheduler:
-
-    wp --path=/absolute/path/to/wordpress cron event run cleverspeed_newsletter_tick --due-now
-
-Inspect existing scheduling to avoid duplicates. Add a host lock alongside the per-post database lock. Heartbeat alone does not prove delivery.
+Run the every-minute cleverspeed_newsletter_tick hook with reliable scheduling and locks. Avoid duplicate schedules. A heartbeat alone does not prove delivery. Keep credentials and subscriber data out of logs.
 
 == Frequently Asked Questions ==
 
@@ -128,13 +124,20 @@ Complete staging acceptance and keep a private rollback backup first. Preserve t
 
 == Changelog ==
 
+= 0.3.3 =
+* Fix newsletter holds when a public article returns a root-relative permanent redirect that only adds or removes its final slash.
+* Retain same-origin and same-article validation, one-redirect limit, consent checks and duplicate protection.
+* Preserve existing settings, credentials, newsletter history and exclusions during upgrades.
+
+= 0.3.2 =
+
+* Rename to Newsletter for UltimateSales.AI; keep the published slug and integration unchanged.
+* Explain new-post email notifications in plain language; identify other channels as future plans.
+
 = 0.3.1 =
 
 * Replace fictional setup URLs with explicit placeholders; service policy links remain above.
 
 = 0.3.0 =
 
-* Directory preparation candidate with ReadySpace naming and external-service/install documentation.
-* Numeric release metadata required by WordPress.org; audited implementation retained.
-* Hardened mode requests, durable ledger transitions and malformed consent responses while retaining legacy integration identifiers.
-* GPLv2-or-later and policy URLs approved; prior provider/host acceptance reused.
+* Initial directory submission with numeric metadata and approved GPLv2-or-later licensing.

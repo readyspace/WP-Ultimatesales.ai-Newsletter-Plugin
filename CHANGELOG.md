@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.3.3 — relative article redirect fix
+
+- Resolve root-relative HTTP 301/308 Location headers against the configured public origin before validating that only the final slash changes.
+- Retain rejection of other origins, other paths, query strings, fragments, protocol-relative URLs and redirect chains.
+- Add successful relative redirect cases in both slash directions and negative regression cases.
+- No changes to settings, encrypted credentials, ledger, consent rules or provider campaign requests.
+
+## 0.3.2 — name and description update
+
+- Approved and published on 11 October 2026 at SVN revision 3739532. The public seven-file package, directory name/version and all four PNG images were verified against the approved release.
+- Rename the plugin, administrator screen and directory banner to Newsletter for UltimateSales.AI.
+- Explain email notifications, article links, supported WordPress setups and setup needs in plain language. Mark other channels as future plans, not current features.
+- Retain the approved WordPress.org slug, plugin filename, text domain, ReadySpace author and every integration/storage identifier.
+- No newsletter, consent, credential, scheduling or ledger behavior changes.
+
+## 0.3.1 — WordPress.org first public release
+
+- Replace fictional setup URLs with explicit placeholders; retain the actual service policy links.
+- Approved and published on 10 October 2026 at SVN revision 3738304. Public package and all four directory images verified against the reviewed source.
+
+## 0.3.0 — numeric directory submission
+
+- Apply numeric release metadata to the audited implementation and submit the owner-approved GPLv2-or-later package.
+
 ## 0.3.0-alpha.3 — WordPress.org readiness review
 
 - Prepare the distinctive ReadySpace Newsletter for UltimateSales.AI name and directory readme, service/data-flow disclosures and separate directory artwork.
