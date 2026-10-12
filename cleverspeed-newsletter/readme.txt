@@ -3,7 +3,7 @@ Contributors: readyspace
 Tags: newsletter, email, headless, automation
 Requires at least: 6.9
 Tested up to: 7.1
-Stable tag: 0.3.2
+Stable tag: 0.3.3
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -40,7 +40,7 @@ Sending starts Off. Draft-only mode prepares emails without sending. After testi
 
 = Future plans: more channels =
 
-ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so more readers can find each new article. These features are not available in version 0.3.2.
+ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so more readers can find each new article. These features are not available in version 0.3.3.
 
 = Requirements and limitations =
 
@@ -123,6 +123,11 @@ Deactivation clears the queue hook. There is no automatic uninstall cleanup: set
 Complete staging acceptance and keep a private rollback backup first. Preserve the pilot folder, options, hooks, ledger and metadata. Legacy cleverspeed-newsletter identifiers remain. The proposed directory slug may require reviewed folder migration for directory updates.
 
 == Changelog ==
+
+= 0.3.3 =
+* Fix newsletter holds when a public article returns a root-relative permanent redirect that only adds or removes its final slash.
+* Retain same-origin and same-article validation, one-redirect limit, consent checks and duplicate protection.
+* Preserve existing settings, credentials, newsletter history and exclusions during upgrades.
 
 = 0.3.2 =
 
