@@ -16,7 +16,7 @@ source = Path('cleverspeed-newsletter')
 slug = 'readyspace-newsletter-for-ultimatesales-ai'
 header = (source / 'cleverspeed-newsletter.php').read_text()
 version = re.search(r'^ \* Version: (.+)$', header, re.M).group(1)
-files = ['cleverspeed-newsletter.php', 'includes/config.php', 'includes/policy.php', 'includes/client.php', 'includes/credential.php', 'readme.txt']
+files = ['cleverspeed-newsletter.php', 'includes/config.php', 'includes/policy.php', 'includes/client.php', 'includes/credential.php', 'includes/http-policy.php', 'includes/html-equivalence.php', 'readme.txt']
 if (source / 'LICENSE').is_file():
     files.append('LICENSE')
 if sys.argv[1] == '--submission':

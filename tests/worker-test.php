@@ -4,7 +4,7 @@ require_once __DIR__ . '/fixture.php';
  define('DB_NAME','offline-test'); define('ARRAY_A','ARRAY_A');
 define('AUTH_KEY',str_repeat('test-only-auth-key-',4)); define('SECURE_AUTH_KEY',str_repeat('test-only-secure-key-',4));
 function register_activation_hook(...$a) {} function register_deactivation_hook(...$a) {}
-function add_filter(...$a) {} function add_action(...$a) {}
+function add_filter(...$a) {} function remove_filter(...$a) {} function add_action(...$a) {}
 function wp_json_encode($a) { return json_encode($a); }
 function get_option($name,$default=[]) { return $GLOBALS['options'][$name] ?? $default; }
 function update_option($name,$value,...$a) { $GLOBALS['options'][$name]=$value; return true; }
@@ -100,7 +100,7 @@ function wp_remote_request($url,$args) {
         if ($GLOBALS['fault']==='create_timeout') return new Exception('timeout');
         $data=['id'=>'campaign-test','status'=>'draft'];
     } else {
-        $data=['id'=>'campaign-test','name'=>$GLOBALS['campaign_name'],'status'=>'draft','editorContentUrl'=>'https://storage.googleapis.com/example.html'];
+        $data=['id'=>'campaign-test','name'=>$GLOBALS['campaign_name'],'status'=>'draft','editorContentUrl'=>'https://storage.googleapis.com/highlevel-backend.appspot.com/location/test-location-123/emails/example.html'];
         if ($GLOBALS['fault']==='unexpected_remote_sent') $data['status']='sent';
         if ($GLOBALS['fault']==='firebase_content') $data['editorContentUrl']='https://firebasestorage.googleapis.com/v0/b/highlevel-backend.appspot.com/o/location%2Ftest-location-123%2Femails%2Ftest%2Findex.html?alt=media&token=dummy';
         if ($GLOBALS['fault']==='wrong_firebase_location') $data['editorContentUrl']='https://firebasestorage.googleapis.com/v0/b/highlevel-backend.appspot.com/o/location%2Fother%2Femails%2Ftest%2Findex.html';

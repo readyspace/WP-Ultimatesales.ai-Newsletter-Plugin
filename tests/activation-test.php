@@ -10,7 +10,7 @@ register_shutdown_function(static function() use ($mockRoot) {
 });
 define('ABSPATH', $mockRoot . '/');
 function register_activation_hook(...$a) {} function register_deactivation_hook(...$a) {}
-function add_filter(...$a) {} function add_action(...$a) {}
+function add_filter(...$a) {} function remove_filter(...$a) {} function add_action(...$a) {}
 function dbDelta($sql) { $GLOBALS['schema'] = $sql; }
 function get_option($name, $default = false) { return $GLOBALS['options'][$name] ?? $default; }
 function add_option($name, $value, ...$a) { $GLOBALS['options'][$name] = $value; return true; }

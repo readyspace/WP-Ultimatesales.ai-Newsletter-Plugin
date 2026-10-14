@@ -2,7 +2,7 @@
 
 By **ReadySpace**. Let your UltimateSales.AI email subscribers know when you publish a new WordPress blog post. After setup, the plugin can automatically prepare an email with the post title, a short summary and a link to the full article on your website. It supports standard WordPress and headless sites whose public article paths match WordPress's post links and pass the required page checks. An UltimateSales.AI account and developer or administrator setup are required.
 
-**Published release: 0.3.3 (12 October 2026, SVN revision `3740508`). Operator setup required.** Supports root-relative permanent redirects that only add or remove the final slash on the same public article. Existing settings, credentials, newsletter history, consent and duplicate protections are unchanged. The official WordPress.org download was verified file-for-file against the tested release.
+**Release candidate: 0.4.0. Operator setup required.** Integrates newsletter request validation and saved-email verification into the regular plugin for both standard and headless WordPress. Scheduling requires the same verified draft and a fresh, frozen recipient list. Existing settings, encrypted credentials, history and archive exclusions retain their identifiers. Sites with custom outbound restrictions can explicitly opt into a narrowly scoped host integration; ordinary sites need no new configuration.
 
 ## What it does
 
@@ -20,7 +20,7 @@ The plugin does **not** create signup forms, confirmation workflows, authenticat
 
 ## Future plans
 
-ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so readers across different channels can find the new article. **Version 0.3.3 supports email only.**
+ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so readers across different channels can find the new article. **Version 0.4.0 supports email only.**
 
 ## Start here
 
@@ -39,7 +39,7 @@ The source directory remains `cleverspeed-newsletter`. Directory packages retain
 - A UltimateSales.AI location-level private integration, authenticated email delivery and confirmed consent records.
 - Existing staff access with permission to manage campaigns.
 
-This candidate has isolated PHP 8.1/8.3/8.4 regression coverage and WordPress 6.9/7.1.3 activation/default-Off checks in WordPress Playground (SQLite). Separate 4 October operating records establish real WordPress/MySQL locking, controlled provider delivery and unsubscribe suppression for the accepted site release `0.3.0-alpha.2-usai.2`. Those results are reused where the code and service contracts agree; they do not establish every installation or email-client layout. See the release readiness checklist before use.
+The release workflow runs isolated PHP 8.1/8.3/8.4 regression checks and a real WordPress 6.9/7.1.3 and MySQL 8 upgrade matrix. It tests both standard and headless layouts, with and without an optional host isolation policy. All newsletter HTTP in these tests is intercepted with fictional data; no campaigns or emails are created in a real account. Passing these checks does not establish a new account's delivery, unsubscribe behaviour or email-client rendering. New installations still require controlled acceptance.
 
 ## Downloads
 

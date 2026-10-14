@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Newsletter for UltimateSales.AI
  * Description: Email your UltimateSales.AI newsletter subscribers when you publish a new WordPress post, with a link to read it.
- * Version: 0.3.3
+ * Version: 0.4.0
  * Plugin URI: https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin
  * Requires at least: 6.9
  * Requires PHP: 8.1
@@ -33,6 +33,19 @@ final class Plugin {
         $s = self::settings();
         return Config::ready() && $s['verified'] === true && !empty($s['user_id']) &&
             hash_equals(Config::fingerprint(), (string)($s['verified_config'] ?? ''));
+    }
+    /** Optional host integration: permit only this plugin's active, validated HTTP intent. */
+    public static function registerHttpIsolationCompatibility(): void {
+        add_filter('pre_http_request', static function ($pre, $args, $url) {
+            if (!is_wp_error($pre) || !Config::ready() || !Credential::ready()) return $pre;
+            try {
+                $code = Config::httpIsolationErrorCode();
+                if ($code === '' || $pre->get_error_codes() !== [$code] ||
+                    !is_array($args) || !is_string($url) || !Client::allowsHttp($url, $args)) return $pre;
+                if ((self::settings()['mode'] ?? 'off') !== 'off' && !self::verified()) return $pre;
+                return false;
+            } catch (\Throwable $error) { return $pre; }
+        }, PHP_INT_MAX, 3);
     }
     public static function activate(): void {
         global $wpdb;
@@ -94,7 +107,10 @@ final class Plugin {
         $excerpt = Policy::excerpt($post->post_excerpt);
         $title = Policy::plain($post->post_title);
         $url = Policy::publicUrl(get_permalink($post));
-        $response = wp_safe_remote_get($url, ['timeout'=>20,'redirection'=>0,'limit_response_size'=>2000000]);
+        $args = ['method'=>'GET','timeout'=>20,'redirection'=>0,'sslverify'=>true,'limit_response_size'=>2000000];
+        $read = static fn(string $target) => Client::withHttpIntent('article', $target, $args,
+            static fn() => wp_safe_remote_get($target, $args));
+        $response = $read($url);
         if (!is_wp_error($response) && in_array(wp_remote_retrieve_response_code($response), [301,308], true)) {
             $location = (string) wp_remote_retrieve_header($response, 'location');
             // Resolve root-relative redirects against the validated public origin only.
@@ -104,7 +120,7 @@ final class Plugin {
             }
             if ($location === $url || !Policy::samePublicArticle($location, $url)) throw new \RuntimeException('Public article redirect is not the same final-slash route; email held.');
             $url = $location;
-            $response = wp_safe_remote_get($url, ['timeout'=>20,'redirection'=>0,'limit_response_size'=>2000000]);
+            $response = $read($url);
         }
         if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) throw new \RuntimeException('Public article is not available yet; email held.');
         if (stripos((string)wp_remote_retrieve_header($response, 'x-robots-tag'), 'noindex') !== false) throw new \RuntimeException('Public article has a noindex header.');
@@ -176,7 +192,7 @@ final class Plugin {
         $s = self::settings();
         global $wpdb;
         $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE state<>'excluded' ORDER BY updated_at DESC LIMIT 30",self::table()),ARRAY_A);
-        echo '<div class="wrap"><h1>Newsletter for UltimateSales.AI</h1><p>By ReadySpace · Version 0.3.3 · Operator setup required</p><p>WordPress → UltimateSales.AI. No Next.js email logic and no WordPress SMTP.</p>';
+        echo '<div class="wrap"><h1>Newsletter for UltimateSales.AI</h1><p>By ReadySpace · Version 0.4.0 · Operator setup required</p><p>WordPress → UltimateSales.AI. No Next.js email logic and no WordPress SMTP.</p>';
         echo '<p>Private per-site configuration: ' . (Config::ready() ? 'valid' : 'missing or invalid; see the installation guide') . '.</p>';
         echo '<p>Mode: <strong>' . esc_html($s['mode']) . '</strong>. Private credential: ' . (Client::credentialReady() ? 'saved securely' : 'not ready') .
             '. Connection verification: ' . (self::verified() ? 'passed' : 'pending') . '.</p>';
@@ -277,3 +293,4 @@ add_action('admin_post_rs_newsletter_credential',[Plugin::class,'saveCredential'
 add_action('admin_post_cs_newsletter_retry',[Plugin::class,'retry']);
 add_action('add_meta_boxes',static function(){add_meta_box('cs-newsletter','ReadySpace newsletter',[Plugin::class,'box'],'post','side');});
 add_action('save_post_post',[Plugin::class,'savePost']);
+add_action('plugins_loaded',[Plugin::class,'registerHttpIsolationCompatibility'],PHP_INT_MAX);

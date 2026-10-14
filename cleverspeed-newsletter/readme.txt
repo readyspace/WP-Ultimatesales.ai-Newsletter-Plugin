@@ -3,7 +3,7 @@ Contributors: readyspace
 Tags: newsletter, email, headless, automation
 Requires at least: 6.9
 Tested up to: 7.1
-Stable tag: 0.3.3
+Stable tag: 0.4.0
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -40,7 +40,7 @@ Sending starts Off. Draft-only mode prepares emails without sending. After testi
 
 = Future plans: more channels =
 
-ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so more readers can find each new article. These features are not available in version 0.3.3.
+ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so more readers can find each new article. These features are not available in version 0.4.0.
 
 = Requirements and limitations =
 
@@ -91,12 +91,12 @@ Account retention and tracking depend on service practices/settings; review the 
 3. Upload the installable ZIP through Plugins -> Add New Plugin -> Upload Plugin and activate. Do not upload the whole repository ZIP. Activation excludes the archive; preserve its ledger.
 4. Add the installation guide's configuration to private wp-config.php before WordPress loads, replacing every placeholder. Never commit populated settings or credentials.
 5. In Tools -> UltimateSales.AI Newsletter, enter the token in the password field and select Save credential and keep sending off. Storage is not connection verification.
-6. Complete acceptance while Off. Configure one scoped scheduler and verify a controlled new-post job.
+6. Begin read/setup acceptance while Off, then verify an unsent draft in Draft-only before enabling Live. Configure one scoped scheduler and verify a controlled new-post job.
 
 = Developer setup guide =
 
 The full private configuration example and verification/scheduler commands are in the installation guide:
-https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin/blob/4c157fa6c580e4fcbe3922f9a43467cfda876865/docs/INSTALLATION.md
+https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin/blob/main/docs/INSTALLATION.md
 
 CMS/public origins can match on standard WordPress. Set privacy_url to your publication's live privacy notice on public_origin. Never put private account settings or credentials in public files.
 
@@ -104,7 +104,7 @@ Stop queue workers and choose Off before changing configuration or credentials. 
 
 = Maintainer acceptance and scheduler =
 
-Follow the guide's account, draft, controlled-delivery and unsubscribe checks while sending is Off. Record verification only after documented acceptance; its administrative command does not perform checks. Test a new post in Draft-only before enabling Live. Existing drafts are not promoted to live sends.
+Follow the guide's staged account, draft, controlled-delivery and unsubscribe checks. Read/setup checks begin while Off; creating a draft requires the accepted configuration gate and Draft-only mode. Its administrative command records a gate and does not perform checks. Finish controlled acceptance before enabling Live. Existing drafts are not promoted to live sends.
 
 Run the every-minute cleverspeed_newsletter_tick hook with reliable scheduling and locks. Avoid duplicate schedules. A heartbeat alone does not prove delivery. Keep credentials and subscriber data out of logs.
 
@@ -120,9 +120,16 @@ Deactivation clears the queue hook. There is no automatic uninstall cleanup: set
 
 = Can I replace a working site-specific pilot with this plugin? =
 
-Complete staging acceptance and keep a private rollback backup first. Preserve the pilot folder, options, hooks, ledger and metadata. Legacy cleverspeed-newsletter identifiers remain. The proposed directory slug may require reviewed folder migration for directory updates.
+Complete staging acceptance and keep a private rollback backup first. Preserve the pilot folder, options, hooks, ledger and metadata. Legacy cleverspeed-newsletter identifiers remain. Keep the published directory slug when updating through WordPress.org. Site-specific compatibility adapters require a reviewed migration; the 0.4.0 release does not remove them automatically.
 
 == Changelog ==
+
+= 0.4.0 =
+* Integrate newsletter request validation, bounded transport and full saved-email verification into the regular plugin.
+* Check the complete saved draft, allowing only narrowly recognized Outlook formatting from the provider.
+* Bind scheduling to the same verified draft and a freshly checked, frozen recipient list; consume authorization before transport.
+* Support standard and headless WordPress using each site's existing configuration, with optional explicit integration for hosts that restrict outbound requests.
+* Preserve settings, encrypted credentials, newsletter history, archive exclusions and ordinary-site verification during upgrades.
 
 = 0.3.3 =
 * Fix newsletter holds when a public article returns a root-relative permanent redirect that only adds or removes its final slash.
@@ -141,3 +148,8 @@ Complete staging acceptance and keep a private rollback backup first. Preserve t
 = 0.3.0 =
 
 * Initial directory submission with numeric metadata and approved GPLv2-or-later licensing.
+
+== Upgrade Notice ==
+
+= 0.4.0 =
+Newsletter safeguards now run inside the regular plugin. Existing standard sites need no new configuration. Sites with custom outbound restrictions should follow the installation guide before removing their newsletter compatibility adapter. This release does not change previews, redirects or other CMS protections.

@@ -4,7 +4,7 @@ require_once __DIR__ . '/fixture.php';
 
 define('AUTH_KEY',str_repeat('test-only-auth-key-',4)); define('SECURE_AUTH_KEY',str_repeat('test-only-secure-key-',4));
 function register_activation_hook(...$a) {} function register_deactivation_hook(...$a) {}
-function add_filter(...$a) {} function add_action(...$a) {}
+function add_filter(...$a) {} function remove_filter(...$a) {} function add_action(...$a) {}
 function current_user_can($cap) { return $GLOBALS['admin']; }
 class Stop extends RuntimeException {} class Redirect extends RuntimeException {}
 function wp_die(...$a) { throw new Stop('stopped'); }
