@@ -9,7 +9,7 @@ final class HttpPolicy {
     /** Validate the authority and decode the path once, rejecting ambiguous encodings. */
     public static function cleanUrl(string $url): ?array {
         if (!filter_var($url, FILTER_VALIDATE_URL) || preg_match('/[\x00-\x20\x7f\\\\]/', $url)) return null;
-        $parts = parse_url($url);
+        $parts = wp_parse_url($url);
         if (!$parts || ($parts['scheme'] ?? '') !== 'https' || empty($parts['host']) ||
             isset($parts['user']) || isset($parts['pass']) || isset($parts['port']) || isset($parts['fragment'])) return null;
         $path = rawurldecode($parts['path'] ?? '');

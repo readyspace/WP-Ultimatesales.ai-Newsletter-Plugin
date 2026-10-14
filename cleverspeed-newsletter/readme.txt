@@ -152,4 +152,4 @@ Complete staging acceptance and keep a private rollback backup first. Preserve t
 == Upgrade Notice ==
 
 = 0.4.0 =
-Newsletter safeguards now run inside the regular plugin. Existing standard sites need no new configuration. Sites with custom outbound restrictions should follow the installation guide before removing their newsletter compatibility adapter. This release does not change previews, redirects or other CMS protections.
+Newsletter safeguards now run inside the regular plugin. Standard sites need no new setting. Follow the installation guide before removing custom newsletter adapters. Previews, redirects and CMS protections require a separate migration.

@@ -5,6 +5,10 @@ cd "$(dirname "$0")/.."
 repository=$(pwd)
 : "${WP_VERSION:?Set the exact released WordPress version to test}"
 : "${WP_DB_PASSWORD:?Set the fictional local test database password}"
+if [[ ! $WP_VERSION =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+  echo 'Use an exact released WordPress version for this compatibility matrix.' >&2
+  exit 1
+fi
 WP_DB_HOST=${WP_DB_HOST:-127.0.0.1:3306}
 WP_DB_NAME=${WP_DB_NAME:-rs_newsletter_test}
 WP_DB_USER=${WP_DB_USER:-root}
@@ -21,7 +25,11 @@ baseline="$work/baseline"
 mkdir -p "$core" "$baseline"
 # Pinned source corresponding to the verified public 0.3.3 release.
 git archive 889da2c21e4eff0ab9598418d6edf858001e97f4 cleverspeed-newsletter | tar -x -C "$baseline"
-wp --path="$core" core download --version="$WP_VERSION" --locale=en_US --force
+# Native ZIP extraction retains long core filenames that WP-CLI's TAR extractor
+# truncated in the 7.1.3 php-ai-client package. Every extracted core file is still
+# checked against the official release checksums before installation.
+curl --fail --silent --show-error --location "https://wordpress.org/wordpress-$WP_VERSION.zip" --output "$work/wordpress.zip"
+unzip -q "$work/wordpress.zip" -d "$work"
 wp --path="$core" core verify-checksums --version="$WP_VERSION"
 wp --path="$core" config create --dbname="$WP_DB_NAME" --dbuser="$WP_DB_USER" --dbpass="$WP_DB_PASSWORD" --dbhost="$WP_DB_HOST" --skip-check --extra-php <<'PHP'
 define('DISABLE_WP_CRON', true);

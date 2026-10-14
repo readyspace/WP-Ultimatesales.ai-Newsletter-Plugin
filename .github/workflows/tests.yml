@@ -43,8 +43,34 @@ jobs:
       - name: Report every error and warning for release review
         if: always()
         run: |
+          # Plugin Check creates wp_pc_ core tables but omits custom plugin tables
+          # (upstream issue #1127). Copy schema only in this disposable laboratory;
+          # do not copy settings or jobs and do not alter production plugin behavior.
+          wp-env run cli wp eval 'global $wpdb; $source = \CleverSpeed\Newsletter\Plugin::table(); $target = "wp_pc_cs_newsletter_jobs"; if ($wpdb->prefix !== "wp_" || $source === $target) throw new \RuntimeException("Unexpected Plugin Check laboratory prefix."); if ($wpdb->query($wpdb->prepare("CREATE TABLE IF NOT EXISTS %i LIKE %i", $target, $source)) === false) throw new \RuntimeException("Cannot create Plugin Check laboratory ledger."); if ((int)$wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM %i", $target)) !== 0) throw new \RuntimeException("Plugin Check laboratory ledger must be empty."); echo "Prepared empty temporary ledger from the actual plugin schema.\n";'
           wp-env run cli wp plugin check cleverspeed-newsletter --format=json --include-experimental --slug=readyspace-newsletter-for-ultimatesales-ai --require=./wp-content/plugins/plugin-check/cli.php > "$RUNNER_TEMP/full-plugin-check-results.txt"
           cat "$RUNNER_TEMP/full-plugin-check-results.txt"
+          python3 - <<'PY'
+          import collections, json, os, re, sys
+          from pathlib import Path
+          report = Path(os.environ['RUNNER_TEMP'], 'full-plugin-check-results.txt').read_text()
+          findings = []
+          decoder = json.JSONDecoder()
+          for match in re.finditer(r'FILE: ([^\n]+)\n', report):
+              result, _ = decoder.raw_decode(report[match.end():].lstrip())
+              if not isinstance(result, list):
+                  raise SystemExit('Invalid Plugin Check result block.')
+              findings.extend(result)
+          if not findings and report.strip() != '[]':
+              raise SystemExit('No parseable Plugin Check findings; inspect the unmodified report.')
+          counts = collections.Counter(item['type'] for item in findings)
+          codes = collections.Counter(item['code'] for item in findings)
+          print('Plugin Check findings:', json.dumps(dict(counts), sort_keys=True))
+          print('Plugin Check codes:', json.dumps(dict(codes), sort_keys=True))
+          database_error = 'WordPress database error:' in report
+          if database_error:
+              print('Plugin Check runtime emitted a database error; inspect its unmodified diagnostic.', file=sys.stderr)
+          raise SystemExit(1 if counts['ERROR'] or database_error else 0)
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -89,7 +115,16 @@ jobs:
           WP_DB_USER: root
           WP_DB_PASSWORD: newsletter-test-only-password
           RS_ALLOW_TEST_DB_RESET: '1'
-        run: bash scripts/test-wordpress-integration.sh | tee wordpress-integration.log
+        run: |
+          set -o pipefail
+          bash scripts/test-wordpress-integration.sh 2>&1 | tee wordpress-integration.log
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          report = Path('wordpress-integration.log').read_text()
+          if len(re.findall(r'^PASS [0-9]+ real WordPress checks /', report, re.MULTILINE)) != 4:
+              raise SystemExit('All four WordPress layout/isolation profiles must finish their assertions.')
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,6 +1,7 @@
 <?php
 // Standalone pure fixtures: no WordPress bootstrap, database, HTTP or real secrets.
 if (!defined('ABSPATH')) define('ABSPATH', '/unused/');
+require_once __DIR__ . '/wp-functions.php';
 require ($argv[1] ?? dirname(__DIR__) . '/cleverspeed-newsletter') . '/includes/http-policy.php';
 use CleverSpeed\Newsletter\HttpPolicy;
 $checks = 0;
