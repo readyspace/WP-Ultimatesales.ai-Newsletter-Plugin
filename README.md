@@ -2,7 +2,7 @@
 
 By **ReadySpace**. Let your UltimateSales.AI email subscribers know when you publish a new WordPress blog post. After setup, the plugin can automatically prepare an email with the post title, a short summary and a link to the full article on your website. It supports standard WordPress and headless sites whose public article paths match WordPress's post links and pass the required page checks. An UltimateSales.AI account and developer or administrator setup are required.
 
-**Release candidate: 0.4.0. Operator setup required.** Integrates newsletter request validation and saved-email verification into the regular plugin for both standard and headless WordPress. Scheduling requires the same verified draft and a fresh, frozen recipient list. Existing settings, encrypted credentials, history and archive exclusions retain their identifiers. Sites with custom outbound restrictions can explicitly opt into a narrowly scoped host integration; ordinary sites need no new configuration.
+**Published release: 0.4.0 (15 October 2026, SVN revision `3747310`). Operator setup required.** Integrates newsletter request validation and saved-email verification into the regular plugin for both standard and headless WordPress. Scheduling requires the same verified draft and a fresh, frozen recipient list. Existing settings, encrypted credentials, history and archive exclusions retain their identifiers. Sites with custom outbound restrictions can explicitly opt into a narrowly scoped host integration; ordinary sites need no new configuration. The official WordPress.org ZIP was verified file-for-file against the tested package. See [release validation](docs/RELEASE-0.4.0.md).
 
 ## What it does
 
