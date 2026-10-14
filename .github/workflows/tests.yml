@@ -1,19 +1,132 @@
-name: Isolated PHP checks
+name: PHP and WordPress compatibility
 on:
   push:
-    branches: [main]
+    branches: [main, 'codex/**']
   pull_request:
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  test:
+  isolated:
+    name: Isolated checks / PHP ${{ matrix.php }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.1', '8.3', '8.4']
     steps:
       - uses: actions/checkout@v4
-      - name: Install distribution PHP packages
-        run: sudo apt-get update && sudo apt-get install -y php-cli php-xml
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, mbstring, openssl
+          coverage: none
       - run: php --version
       - run: bash scripts/test.sh
       - run: bash scripts/package.sh
+  plugin-check:
+    name: Official WordPress Plugin Check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the complete published plugin
+        uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: cleverspeed-newsletter
+          slug: readyspace-newsletter-for-ultimatesales-ai
+          # Errors gate publication; the unfiltered report below retains all warnings.
+          ignore-warnings: 'true'
+          ignore-errors: 'false'
+          include-experimental: 'true'
+      - name: Report every error and warning for release review
+        if: always()
+        run: |
+          # Plugin Check creates wp_pc_ core tables but omits custom plugin tables
+          # (upstream issue #1127). Copy schema only in this disposable laboratory;
+          # do not copy settings or jobs and do not alter production plugin behavior.
+          wp-env run cli wp eval 'global $wpdb; $source = \CleverSpeed\Newsletter\Plugin::table(); $target = "wp_pc_cs_newsletter_jobs"; if ($wpdb->prefix !== "wp_" || $source === $target) throw new \RuntimeException("Unexpected Plugin Check laboratory prefix."); if ($wpdb->query($wpdb->prepare("CREATE TABLE IF NOT EXISTS %i LIKE %i", $target, $source)) === false) throw new \RuntimeException("Cannot create Plugin Check laboratory ledger."); if ((int)$wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM %i", $target)) !== 0) throw new \RuntimeException("Plugin Check laboratory ledger must be empty."); echo "Prepared empty temporary ledger from the actual plugin schema.\n";'
+          wp-env run cli wp plugin check cleverspeed-newsletter --format=json --include-experimental --slug=readyspace-newsletter-for-ultimatesales-ai --require=./wp-content/plugins/plugin-check/cli.php > "$RUNNER_TEMP/full-plugin-check-results.txt"
+          cat "$RUNNER_TEMP/full-plugin-check-results.txt"
+          python3 - <<'PY'
+          import collections, json, os, re, sys
+          from pathlib import Path
+          report = Path(os.environ['RUNNER_TEMP'], 'full-plugin-check-results.txt').read_text()
+          findings = []
+          decoder = json.JSONDecoder()
+          for match in re.finditer(r'FILE: ([^\n]+)\n', report):
+              result, _ = decoder.raw_decode(report[match.end():].lstrip())
+              if not isinstance(result, list):
+                  raise SystemExit('Invalid Plugin Check result block.')
+              findings.extend(result)
+          if not findings and report.strip() != '[]':
+              raise SystemExit('No parseable Plugin Check findings; inspect the unmodified report.')
+          counts = collections.Counter(item['type'] for item in findings)
+          codes = collections.Counter(item['code'] for item in findings)
+          print('Plugin Check findings:', json.dumps(dict(counts), sort_keys=True))
+          print('Plugin Check codes:', json.dumps(dict(codes), sort_keys=True))
+          database_error = 'WordPress database error:' in report
+          if database_error:
+              print('Plugin Check runtime emitted a database error; inspect its unmodified diagnostic.', file=sys.stderr)
+          raise SystemExit(1 if counts['ERROR'] or database_error else 0)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: full-plugin-check-results
+          path: ${{ runner.temp }}/full-plugin-check-results.txt
+  wordpress:
+    name: WordPress ${{ matrix.wordpress }} / PHP ${{ matrix.php }} / MySQL 8
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.1', '8.3', '8.4']
+        wordpress: ['6.9', '7.1.3']
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: newsletter-test-only-password
+          MYSQL_DATABASE: rs_newsletter_test
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, mbstring, mysqli, openssl
+          coverage: none
+          tools: wp-cli
+      - name: Test actual plugin upgrade and both site layouts
+        env:
+          WP_VERSION: ${{ matrix.wordpress }}
+          WP_DB_HOST: 127.0.0.1:3306
+          WP_DB_NAME: rs_newsletter_test
+          WP_DB_USER: root
+          WP_DB_PASSWORD: newsletter-test-only-password
+          RS_ALLOW_TEST_DB_RESET: '1'
+        run: |
+          set -o pipefail
+          bash scripts/test-wordpress-integration.sh 2>&1 | tee wordpress-integration.log
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          report = Path('wordpress-integration.log').read_text()
+          if len(re.findall(r'^PASS [0-9]+ real WordPress checks /', report, re.MULTILINE)) != 4:
+              raise SystemExit('All four WordPress layout/isolation profiles must finish their assertions.')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wordpress-${{ matrix.wordpress }}-php-${{ matrix.php }}
+          path: wordpress-integration.log

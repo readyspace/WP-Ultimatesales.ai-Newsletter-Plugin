@@ -1,4 +1,6 @@
 <?php
+if (!defined('ABSPATH')) define('ABSPATH', '/unused/');
+require_once __DIR__ . '/wp-functions.php';
 // Isolated in-memory options. Never load WordPress or real credentials.
 define('AUTH_KEY',str_repeat('test-only-auth-key-',4)); define('SECURE_AUTH_KEY',str_repeat('test-only-secure-key-',4));
 function get_option($name,$default=[]) { return $GLOBALS['options'][$name] ?? $default; }

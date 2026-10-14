@@ -1,10 +1,21 @@
 <?php
 /**
- * Plugin Name: WP UltimateSales.AI Newsletter Plugin
- * Description: Direct WordPress-to-UltimateSales.AI article newsletters, with consent checks and a durable send ledger.
- * Version: 0.3.0-alpha.2
+ * Plugin Name: Newsletter for UltimateSales.AI
+ * Description: Email your UltimateSales.AI newsletter subscribers when you publish a new WordPress post, with a link to read it.
+ * Version: 0.4.0
+ * Plugin URI: https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin
+ * Requires at least: 6.9
  * Requires PHP: 8.1
  * Author: ReadySpace
+ * Author URI: https://readyspace.com
+ * Text Domain: readyspace-newsletter-for-ultimatesales-ai
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * Copyright (C) 2026 ReadySpace.
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ * This program is free software under GPL version 2 or any later version.
+ * It is distributed WITHOUT ANY WARRANTY; see the included LICENSE.
  */
 namespace CleverSpeed\Newsletter;
 defined('ABSPATH') || exit;
@@ -22,6 +33,19 @@ final class Plugin {
         $s = self::settings();
         return Config::ready() && $s['verified'] === true && !empty($s['user_id']) &&
             hash_equals(Config::fingerprint(), (string)($s['verified_config'] ?? ''));
+    }
+    /** Optional host integration: permit only this plugin's active, validated HTTP intent. */
+    public static function registerHttpIsolationCompatibility(): void {
+        add_filter('pre_http_request', static function ($pre, $args, $url) {
+            if (!is_wp_error($pre) || !Config::ready() || !Credential::ready()) return $pre;
+            try {
+                $code = Config::httpIsolationErrorCode();
+                if ($code === '' || $pre->get_error_codes() !== [$code] ||
+                    !is_array($args) || !is_string($url) || !Client::allowsHttp($url, $args)) return $pre;
+                if ((self::settings()['mode'] ?? 'off') !== 'off' && !self::verified()) return $pre;
+                return false;
+            } catch (\Throwable $error) { return $pre; }
+        }, PHP_INT_MAX, 3);
     }
     public static function activate(): void {
         global $wpdb;
@@ -41,11 +65,17 @@ final class Plugin {
             PRIMARY KEY  (post_id),
             KEY due_state (state,due_at)
         ) {$wpdb->get_charset_collate()};");
+        $existingTable = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+        if (!is_string($existingTable) || strcasecmp($existingTable, $table) !== 0) {
+            throw new \RuntimeException('Cannot create newsletter ledger; activation stopped.');
+        }
         if (!get_option('cs_newsletter_installed')) {
             // Seed every already-published article. Activation must not email the archive.
-            $wpdb->query("INSERT IGNORE INTO $table (post_id,state,note,updated_at)
+            if ($wpdb->query($wpdb->prepare("INSERT IGNORE INTO %i (post_id,state,note,updated_at)
                 SELECT ID,'excluded','Published before integration installation',UTC_TIMESTAMP()
-                FROM {$wpdb->posts} WHERE post_type='post' AND post_status='publish'");
+                FROM %i WHERE post_type='post' AND post_status='publish'", $table, $wpdb->posts)) === false) {
+                throw new \RuntimeException('Cannot exclude the existing article archive; activation stopped.');
+            }
             add_option('cs_newsletter_installed', time(), '', false);
             add_option('cs_newsletter_settings', ['mode'=>'off','user_id'=>'','cutover'=>time(),'verified'=>false], '', false);
         }
@@ -54,12 +84,12 @@ final class Plugin {
     public static function deactivate(): void { wp_clear_scheduled_hook(self::HOOK); }
     public static function record(int $id): ?array {
         global $wpdb;
-        return $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . self::table() . ' WHERE post_id=%d', $id), ARRAY_A) ?: null;
+        return $wpdb->get_row($wpdb->prepare('SELECT * FROM %i WHERE post_id=%d', self::table(), $id), ARRAY_A) ?: null;
     }
     public static function set(int $id, array $data): void {
         global $wpdb;
         $data['updated_at'] = gmdate('Y-m-d H:i:s');
-        if ($wpdb->update(self::table(), $data, ['post_id'=>$id]) === false) throw new \RuntimeException('Cannot save newsletter ledger; stopped.');
+        if ($wpdb->update(self::table(), $data, ['post_id'=>$id]) !== 1) throw new \RuntimeException('Cannot save newsletter ledger; stopped.');
     }
     public static function transition(string $new, string $old, \WP_Post $post): void {
         if ($new !== 'publish' || $old === 'publish' || $post->post_type !== 'post') return;
@@ -67,9 +97,8 @@ final class Plugin {
         $s = self::settings();
         $state = $s['mode'] === 'off' ? 'excluded' : 'queued';
         if ($post->post_password !== '' || get_post_meta($post->ID, '_cs_newsletter_skip', true)) $state = 'excluded';
-        $wpdb->query($wpdb->prepare('INSERT IGNORE INTO ' . self::table() .
-            ' (post_id,state,due_at,note,updated_at) VALUES (%d,%s,%d,%s,%s)',
-            $post->ID,$state,time()+300,$state === 'excluded' ? 'Not eligible at first publication' : 'Waiting five minutes for public publication',gmdate('Y-m-d H:i:s')));
+        $wpdb->query($wpdb->prepare('INSERT IGNORE INTO %i (post_id,state,due_at,note,updated_at) VALUES (%d,%s,%d,%s,%s)',
+            self::table(),$post->ID,$state,time()+300,$state === 'excluded' ? 'Not eligible at first publication' : 'Waiting five minutes for public publication',gmdate('Y-m-d H:i:s')));
     }
     public static function article(int $id): array {
         $post = get_post($id);
@@ -78,10 +107,24 @@ final class Plugin {
         $excerpt = Policy::excerpt($post->post_excerpt);
         $title = Policy::plain($post->post_title);
         $url = Policy::publicUrl(get_permalink($post));
-        $response = wp_safe_remote_get($url, ['timeout'=>20,'redirection'=>0,'limit_response_size'=>2000000]);
+        $args = ['method'=>'GET','timeout'=>20,'redirection'=>0,'sslverify'=>true,'limit_response_size'=>2000000];
+        $read = static fn(string $target) => Client::withHttpIntent('article', $target, $args,
+            static fn() => wp_safe_remote_get($target, $args));
+        $response = $read($url);
+        if (!is_wp_error($response) && in_array(wp_remote_retrieve_response_code($response), [301,308], true)) {
+            $location = (string) wp_remote_retrieve_header($response, 'location');
+            // Resolve root-relative redirects against the validated public origin only.
+            // Keep the same-article guard below; protocol-relative URLs remain invalid.
+            if (str_starts_with($location, '/') && !str_starts_with($location, '//')) {
+                $location = Config::get('public_origin') . $location;
+            }
+            if ($location === $url || !Policy::samePublicArticle($location, $url)) throw new \RuntimeException('Public article redirect is not the same final-slash route; email held.');
+            $url = $location;
+            $response = $read($url);
+        }
         if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) throw new \RuntimeException('Public article is not available yet; email held.');
         if (stripos((string)wp_remote_retrieve_header($response, 'x-robots-tag'), 'noindex') !== false) throw new \RuntimeException('Public article has a noindex header.');
-        Policy::assertPublicArticle(wp_remote_retrieve_body($response), $url, $title);
+        $url = Policy::assertPublicArticle(wp_remote_retrieve_body($response), $url, $title);
         return compact('title','excerpt','url');
     }
     public static function tick(): void {
@@ -89,8 +132,7 @@ final class Plugin {
         update_option('cs_newsletter_last_tick', time(), false);
         $s = self::settings();
         if ($s['mode'] === 'off' || !self::verified() || !Client::credentialReady()) return;
-        $ids = $wpdb->get_col($wpdb->prepare('SELECT post_id FROM ' . self::table() .
-            " WHERE state='queued' AND due_at<=%d ORDER BY due_at LIMIT 3",time()));
+        $ids = $wpdb->get_col($wpdb->prepare("SELECT post_id FROM %i WHERE state='queued' AND due_at<=%d ORDER BY due_at LIMIT 3",self::table(),time()));
         foreach ($ids as $id) self::process((int)$id);
     }
     public static function process(int $id): void {
@@ -144,13 +186,13 @@ final class Plugin {
         }
     }
 
-    public static function menu(): void { add_management_page('ReadySpace Newsletter Bridge','ReadySpace Newsletter','manage_options','cs-newsletter',[self::class,'page']); }
+    public static function menu(): void { add_management_page('Newsletter for UltimateSales.AI','UltimateSales.AI Newsletter','manage_options','cs-newsletter',[self::class,'page']); }
     public static function page(): void {
         if (!current_user_can('manage_options')) return;
         $s = self::settings();
         global $wpdb;
-        $rows = $wpdb->get_results('SELECT * FROM ' . self::table() . " WHERE state<>'excluded' ORDER BY updated_at DESC LIMIT 30",ARRAY_A);
-        echo '<div class="wrap"><h1>WP UltimateSales.AI Newsletter Plugin</h1><p>By ReadySpace · Version 0.3.0-alpha.2 · Developer preview</p><p>WordPress → UltimateSales.AI. No Next.js email logic and no WordPress SMTP.</p>';
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE state<>'excluded' ORDER BY updated_at DESC LIMIT 30",self::table()),ARRAY_A);
+        echo '<div class="wrap"><h1>Newsletter for UltimateSales.AI</h1><p>By ReadySpace · Version 0.4.0 · Operator setup required</p><p>WordPress → UltimateSales.AI. No Next.js email logic and no WordPress SMTP.</p>';
         echo '<p>Private per-site configuration: ' . (Config::ready() ? 'valid' : 'missing or invalid; see the installation guide') . '.</p>';
         echo '<p>Mode: <strong>' . esc_html($s['mode']) . '</strong>. Private credential: ' . (Client::credentialReady() ? 'saved securely' : 'not ready') .
             '. Connection verification: ' . (self::verified() ? 'passed' : 'pending') . '.</p>';
@@ -184,10 +226,12 @@ final class Plugin {
         echo '</tbody></table><p>Creating, sending or uncertain jobs require reconciliation in UltimateSales.AI. There is deliberately no blind-resend button. Disabling this plugin stops new queue work; it cannot recall an email already accepted by UltimateSales.AI.</p></div>';
     }
     public static function saveSettings(): void {
-        if (!current_user_can('manage_options')) wp_die('Forbidden',403);
+        if (!current_user_can('manage_options')) wp_die('Forbidden', '', ['response'=>403]);
         check_admin_referer('cs_newsletter_settings');
+        if (sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD'] ?? '')) !== 'POST') wp_die('Use POST to save settings.');
+        if (isset($_POST['mode']) && !is_string($_POST['mode'])) wp_die('Invalid mode');
         $s = self::settings();
-        $mode = sanitize_key($_POST['mode'] ?? 'off');
+        $mode = sanitize_key(wp_unslash($_POST['mode'] ?? 'off'));
         if (!in_array($mode,['off','draft','live'],true)) wp_die('Invalid mode');
         if ($mode !== 'off' && (!self::verified() || !Client::credentialReady())) wp_die('Complete configuration and connection verification first.');
         $s['mode']=$mode;
@@ -197,13 +241,15 @@ final class Plugin {
     public static function saveCredential(): void {
         if (!current_user_can('manage_options')) wp_die('Forbidden', '', ['response'=>403]);
         check_admin_referer('rs_newsletter_credential');
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !is_ssl()) wp_die('Use HTTPS to save credentials.');
+        if (sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD'] ?? '')) !== 'POST' || !is_ssl()) wp_die('Use HTTPS to save credentials.');
         // Fail closed before replacement. Existing accepted campaigns cannot be recalled.
         $s = self::settings(); $s['mode']='off'; $s['verified']=false; $s['user_id']='';
         update_option('cs_newsletter_settings',$s,false);
         if (self::settings()['mode'] !== 'off' || self::settings()['verified']) wp_die('Could not disable sending. Credential was not changed.');
         try {
             if (!isset($_POST['token']) || !is_string($_POST['token'])) throw new \RuntimeException('Enter a valid private integration token.');
+            // Credential::save validates the complete ASCII token; generic text sanitization would silently alter it.
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Strict format and length validation happens in Credential::save before encryption.
             Credential::save(wp_unslash($_POST['token']));
         } catch (\Throwable $e) {
             unset($_POST['token']);
@@ -213,12 +259,13 @@ final class Plugin {
         wp_safe_redirect(admin_url('tools.php?page=cs-newsletter')); exit;
     }
     public static function retry(): void {
-        $id = absint($_POST['post_id'] ?? 0);
-        if (!current_user_can('manage_options')) wp_die('Forbidden',403);
+        if (isset($_POST['post_id']) && !is_scalar($_POST['post_id'])) wp_die('Invalid post.');
+        $id = absint(wp_unslash($_POST['post_id'] ?? 0));
+        if (!current_user_can('manage_options')) wp_die('Forbidden', '', ['response'=>403]);
         check_admin_referer('cs_newsletter_retry_' . $id);
+        if (sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD'] ?? '')) !== 'POST') wp_die('Use POST to recheck a post.');
         global $wpdb;
-        $wpdb->query($wpdb->prepare('UPDATE ' . self::table() .
-            " SET state='queued',due_at=%d,note='Editor requested a safe pre-creation recheck' WHERE post_id=%d AND state='held' AND campaign_id=''",time()+300,$id));
+        $wpdb->query($wpdb->prepare("UPDATE %i SET state='queued',due_at=%d,note='Editor requested a safe pre-creation recheck' WHERE post_id=%d AND state='held' AND campaign_id=''",self::table(),time()+300,$id));
         wp_safe_redirect(admin_url('tools.php?page=cs-newsletter')); exit;
     }
     public static function box(\WP_Post $post): void {
@@ -230,7 +277,8 @@ final class Plugin {
     }
     public static function savePost(int $id): void {
         if (wp_is_post_revision($id) || wp_is_post_autosave($id) || !current_user_can('edit_post',$id) ||
-            !isset($_POST['cs_newsletter_nonce']) || !wp_verify_nonce($_POST['cs_newsletter_nonce'],'cs_newsletter_post')) return;
+            !isset($_POST['cs_newsletter_nonce']) || !is_string($_POST['cs_newsletter_nonce']) ||
+            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cs_newsletter_nonce'])),'cs_newsletter_post')) return;
         update_post_meta($id,'_cs_newsletter_skip',isset($_POST['cs_newsletter_skip']) ? '1' : '');
     }
 }
@@ -245,3 +293,4 @@ add_action('admin_post_rs_newsletter_credential',[Plugin::class,'saveCredential'
 add_action('admin_post_cs_newsletter_retry',[Plugin::class,'retry']);
 add_action('add_meta_boxes',static function(){add_meta_box('cs-newsletter','ReadySpace newsletter',[Plugin::class,'box'],'post','side');});
 add_action('save_post_post',[Plugin::class,'savePost']);
+add_action('plugins_loaded',[Plugin::class,'registerHttpIsolationCompatibility'],PHP_INT_MAX);

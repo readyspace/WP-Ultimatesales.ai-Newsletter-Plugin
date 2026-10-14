@@ -1,5 +1,6 @@
 <?php
 namespace CleverSpeed\Newsletter;
+defined('ABSPATH') || exit;
 
 /** Private per-site configuration. No pilot/customer defaults are shipped. */
 final class Config {
@@ -13,10 +14,24 @@ final class Config {
         return $c[$key];
     }
     public static function ready(): bool {
-        try { self::all(); return true; } catch (\Throwable $e) { return false; }
+        try { self::all(); self::httpIsolationErrorCode(); return true; } catch (\Throwable $e) { return false; }
+    }
+    /** Unset means ordinary WordPress behavior; no site error is overridden by default. */
+    public static function httpIsolationErrorCode(): string {
+        if (!defined('RS_NEWSLETTER_HTTP_ISOLATION_ERROR_CODE')) return '';
+        $value = RS_NEWSLETTER_HTTP_ISOLATION_ERROR_CODE;
+        if (!is_string($value) || !preg_match('/^[a-z][a-z0-9_]{1,99}$/D', $value) ||
+            in_array($value, ['http_request_failed','http_request_not_executed','http_api_debug'], true)) {
+            throw new \RuntimeException('Use the explicit custom error code from your host newsletter isolation policy.');
+        }
+        return $value;
     }
     public static function fingerprint(): string {
-        return hash('sha256', json_encode(self::all(), JSON_UNESCAPED_SLASHES));
+        $config = self::all();
+        $error = self::httpIsolationErrorCode();
+        // Preserve the 0.3.3 fingerprint for sites that have not opted into the host bridge.
+        if ($error !== '') $config['http_isolation_error_code'] = $error;
+        return hash('sha256', json_encode($config, JSON_UNESCAPED_SLASHES));
     }
     public static function validate(array $c): array {
         $keys = ['location_id','confirmed_tag','pending_tag','unsubscribed_tag','cms_origin','public_origin',
@@ -34,7 +49,7 @@ final class Config {
             if (!filter_var($c[$key], FILTER_VALIDATE_EMAIL)) throw new \RuntimeException('Invalid sender or reply address.');
         }
         foreach (['cms_origin','public_origin','privacy_url'] as $key) {
-            $p = parse_url($c[$key]);
+            $p = wp_parse_url($c[$key]);
             if (!$p || ($p['scheme'] ?? '') !== 'https' || empty($p['host']) || isset($p['user']) || isset($p['pass']) ||
                 isset($p['port']) || isset($p['query']) || isset($p['fragment']) || !filter_var($c[$key], FILTER_VALIDATE_URL)) {
                 throw new \RuntimeException('Use clean HTTPS origins and privacy URL.');

@@ -6,7 +6,7 @@ Write a normal WordPress post and an explicit 10–150-word Excerpt (60–90 rec
 
 Draft saves and edits do not send. Scheduled posts become eligible when WordPress changes them to Published. The first publication waits five minutes. Posts first published while Off remain excluded after enabling. Republishing the same post ID cannot create another queue job. A copied/new post has a new ID and is a different publication.
 
-The public page must return 200 without redirects, match the expected canonical and single H1, and not carry noindex. Headless sites must already map the CMS path to the public path. The plugin does not implement Faust previews or frontend deployment.
+The public page must return 200, match the expected canonical and single H1, and not carry noindex. One 301/308 redirect is permitted only when its absolute or root-relative HTTPS destination differs solely by a final slash on the same configured origin and article path; a second redirect is rejected. Canonical URLs have the same narrow final-slash tolerance, and the validated canonical is used in the email. Headless sites must already map the CMS path to the public path. The plugin does not implement Faust previews or frontend deployment.
 
 ## Modes and states
 
@@ -20,7 +20,7 @@ The usual path is `queued → creating → created → draft_ready` or `queued �
 
 ## Consent
 
-Contacts must match the location and confirmed tag, have valid email and explicit global DND=false, and have no pending/unsubscribed tag or active/unknown email suppression. Emails are deduplicated. The full search is repeated immediately before scheduling. Pagination errors or the 10,000-contact safety boundary stop the whole operation; there is no partial-list send.
+Contacts must match the location and confirmed tag, have valid email and explicit global DND=false, and have no pending/unsubscribed tag. Every present Email channel entry is matched without case sensitivity and must explicitly say inactive; active, disabled, malformed, unknown or conflicting entries are rejected. Absent Email channel metadata is not labelled inactive: final suppression remains the native marketing provider's responsibility. Emails are deduplicated. The full search is repeated immediately before scheduling. The same client must have checked the complete saved draft and a complete audience within the preceding 60 seconds. The schedule freezes those exact deduplicated contact IDs. Authorization is consumed before transport, including when the outcome becomes uncertain. Pagination errors or the 10,000-contact safety boundary stop the whole operation; there is no partial-list send.
 
 UltimateSales.AI remains authoritative. A contact can unsubscribe after the final read, so provider suppression must also be effective. No contact writes, imports, confirmation, SMS, WhatsApp, tracking installation or consent changes are performed by this plugin.
 
@@ -36,7 +36,7 @@ UltimateSales.AI remains authoritative. A contact can unsubscribe after the fina
 | Verification pending | Recheck configuration, credential and launch evidence; never force the flag to silence an error. |
 | Stale heartbeat | Inspect the scoped host scheduler without logging secrets. |
 
-The per-post database lock and unique ledger key protect local concurrency. Persisting state before writes avoids blind replay after timeouts. This is not a mathematical exactly-once guarantee across a remote API. The alpha has no automated reconciliation or delivery webhook.
+The per-post database lock and unique ledger key protect local concurrency. Persisting state before writes avoids blind replay after timeouts. This is not a mathematical exactly-once guarantee across a remote API. The plugin has no automated reconciliation or delivery webhook.
 
 ## Credential storage
 
@@ -47,3 +47,12 @@ AES-256-GCM encrypts the saved token in a non-autoloaded WordPress option. The k
 Set mode Off, stop only this plugin's host schedule, allow in-flight work to settle, then deactivate. Do not interrupt an uncertain send and immediately repeat it. Keep the ledger, options and remote campaign references. Deactivation cannot recall an email already accepted by the provider. There is no destructive uninstall routine.
 
 Restore compatible plugin files from a private backup if necessary. Check credential format and configuration verification before restarting. Never restore a production database onto an active test site with live sending enabled.
+
+
+## Saved draft and HTTP safeguards
+
+The complete saved email must match the plugin's generated HTML, including structure, styles, title, excerpt, article destination, legal footer, privacy and unsubscribe links. Only specifically recognized provider Outlook formatting is normalized. A changed or truncated body holds the job; no WordPress response filter rewrites saved HTML to make verification pass.
+
+All client operations validate exact API routes, per-site location and staff identity, transport limits and permitted request bodies. Article and storage reads carry no CRM token. Scheduling also requires current configuration verification, matching draft/title and fresh complete recipients on the same client object. Direct or repeated schedule calls are rejected; preserve the ledger and reconcile ambiguous outcomes.
+
+Optional host isolation compatibility is off unless explicitly configured. It permits only a validated request while that request is in progress; it does not change WordPress mail, previews, redirects, robots rules or other plugins' HTTP access. See the installation guide before replacing a must-use newsletter adapter.

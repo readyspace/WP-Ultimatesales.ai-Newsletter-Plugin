@@ -1,6 +1,6 @@
 # Contributing
 
-Please discuss a proposed change in an issue before a large implementation. Do not submit code until the repository licence is settled. Use a focused branch/PR, explain the problem and risk, add regression tests and update operator documentation.
+Please discuss a proposed change in an issue before a large implementation. The original project source, documentation and artwork are licensed under GPLv2 or later. Contributions must be compatible with that licence and you must have the rights to submit them. See LICENSE and COPYRIGHT.txt. Use a focused branch/PR, explain the problem and risk, add regression tests and update operator documentation.
 
 Never include tokens, WordPress configuration, database exports, real subscriber fixtures, private campaign IDs or screenshots of customer accounts. Use example.org/example.test and synthetic values. Tests must never call a live provider.
 

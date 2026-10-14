@@ -1,5 +1,6 @@
 <?php
 namespace CleverSpeed\Newsletter;
+defined('ABSPATH') || exit;
 
 /** No plaintext credentials in options, HTML, logs or API responses. */
 final class Credential {

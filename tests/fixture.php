@@ -1,4 +1,6 @@
 <?php
+if (!defined('ABSPATH')) define('ABSPATH', '/unused/');
+require_once __DIR__ . '/wp-functions.php';
 // Fictional configuration. Tests mock all HTTP and must not load WordPress.
 define('RS_NEWSLETTER_CONFIG', [
     'location_id'=>'test-location-123',
