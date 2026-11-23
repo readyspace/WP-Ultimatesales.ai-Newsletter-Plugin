@@ -3,7 +3,7 @@ Contributors: readyspace
 Tags: newsletter, email, headless, automation
 Requires at least: 6.9
 Tested up to: 7.1
-Stable tag: 0.4.0
+Stable tag: 0.4.1
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -40,7 +40,7 @@ Sending starts Off. Draft-only mode prepares emails without sending. After testi
 
 = Future plans: more channels =
 
-ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so more readers can find each new article. These features are not available in version 0.4.0.
+ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so more readers can find each new article. These features are not available in version 0.4.1.
 
 = Requirements and limitations =
 
@@ -52,6 +52,10 @@ ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, 
 * Public articles with matching canonical/H1 and no noindex. Only a final-slash URL difference and one same-origin 301/308 redirect are allowed.
 
 Private configuration and installation verification require an operator; no connection wizard is provided. New accounts/sites need their own delivery, unsubscribe and host checks.
+
+= View this site's sending configuration =
+
+Administrators can open Tools -> UltimateSales.AI Newsletter to see the configured publication, public website, provider location, sender, Reply-To and audience tags. The page explains the existing eligibility and Do Not Disturb checks. Saved configuration and the recorded connection gate are labelled separately from live provider verification. This read-only section does not request contacts or send email; the current eligible-recipient count is shown as unavailable rather than inferred from past jobs.
 
 Source and operating documentation: https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin
 
@@ -124,6 +128,12 @@ Complete staging acceptance and keep a private rollback backup first. Preserve t
 
 == Changelog ==
 
+= 0.4.1 =
+* Add an administrator-only Sending configuration section using each installation's own publication, location, sender, Reply-To and audience tags.
+* Explain eligibility and Do Not Disturb suppression, and distinguish configured values and the recorded connection gate from live provider verification.
+* Show missing or invalid values safely, without credentials, subscriber details or provider requests; a current recipient count is explicitly unavailable.
+* Keep sending modes, credentials, configuration, newsletter jobs and duplicate protection unchanged.
+
 = 0.4.0 =
 * Integrate newsletter request validation, bounded transport and full saved-email verification into the regular plugin.
 * Check the complete saved draft, allowing only narrowly recognized Outlook formatting from the provider.
@@ -150,6 +160,9 @@ Complete staging acceptance and keep a private rollback backup first. Preserve t
 * Initial directory submission with numeric metadata and approved GPLv2-or-later licensing.
 
 == Upgrade Notice ==
+
+= 0.4.1 =
+Adds read-only sending configuration under Tools -> UltimateSales.AI Newsletter. No configuration migration is required. The update preserves sending behaviour, credentials, verification and newsletter history.
 
 = 0.4.0 =
 Newsletter safeguards now run inside the regular plugin. Standard sites need no new setting. Follow the installation guide before removing custom newsletter adapters. Previews, redirects and CMS protections require a separate migration.

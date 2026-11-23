@@ -6,6 +6,8 @@ By **ReadySpace**. Let your UltimateSales.AI email subscribers know when you pub
 
 ## What it does
 
+**Source candidate: 0.4.1 (not yet published to WordPress.org).** Adds a read-only Sending configuration section under Tools -> UltimateSales.AI Newsletter. Administrators can inspect each installation's publication, location, sender, Reply-To and audience tags, with clear eligibility/DND explanations and saved-versus-observed labels. It makes no recipient queries or sending changes. See [0.4.1 review and publishing steps](docs/RELEASE-0.4.1.md).
+
 - Queues an excerpt email five minutes after a post's first publication.
 - Excludes the existing archive on installation; edits and republishes do not resend.
 - Uses the explicit WordPress Excerpt (10–150 words; 60–90 recommended).
@@ -20,7 +22,7 @@ The plugin does **not** create signup forms, confirmation workflows, authenticat
 
 ## Future plans
 
-ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so readers across different channels can find the new article. **Version 0.4.0 supports email only.**
+ReadySpace plans to add new-post sharing to WhatsApp groups, Telegram channels, Facebook Pages, LinkedIn Pages and Google Business Profile (formerly Google My Business). The aim is to share a link so readers across different channels can find the new article. **The current plugin supports email only.**
 
 ## Start here
 

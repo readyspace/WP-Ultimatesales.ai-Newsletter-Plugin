@@ -84,7 +84,7 @@ if ($phase === 'seed') {
 rs_check($phase === 'test', 'known laboratory phase');
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 $header = get_plugin_data(WP_PLUGIN_DIR . '/readyspace-newsletter-for-ultimatesales-ai/cleverspeed-newsletter.php', false, false);
-rs_check($header['Version'] === '0.4.0', 'new release bootstrapped after replacing the active directory');
+rs_check($header['Version'] === '0.4.1', 'new release bootstrapped after replacing the active directory');
 $snapshot = get_option('rs_test_upgrade_snapshot');
 rs_check(get_option('cs_newsletter_settings') === $snapshot['settings'], 'file upgrade preserves all existing settings');
 rs_check(get_option('rs_newsletter_credential') === $snapshot['credential'], 'file upgrade preserves encrypted credential byte for byte');

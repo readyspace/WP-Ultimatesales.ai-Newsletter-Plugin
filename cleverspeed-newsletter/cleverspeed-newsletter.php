@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Newsletter for UltimateSales.AI
  * Description: Email your UltimateSales.AI newsletter subscribers when you publish a new WordPress post, with a link to read it.
- * Version: 0.4.0
+ * Version: 0.4.1
  * Plugin URI: https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin
  * Requires at least: 6.9
  * Requires PHP: 8.1
@@ -22,6 +22,7 @@ defined('ABSPATH') || exit;
 require_once __DIR__ . '/includes/policy.php';
 require_once __DIR__ . '/includes/credential.php';
 require_once __DIR__ . '/includes/client.php';
+require_once __DIR__ . '/includes/sending-configuration-status.php';
 
 final class Plugin {
     public const HOOK = 'cleverspeed_newsletter_tick';
@@ -192,10 +193,12 @@ final class Plugin {
         $s = self::settings();
         global $wpdb;
         $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE state<>'excluded' ORDER BY updated_at DESC LIMIT 30",self::table()),ARRAY_A);
-        echo '<div class="wrap"><h1>Newsletter for UltimateSales.AI</h1><p>By ReadySpace · Version 0.4.0 · Operator setup required</p><p>WordPress → UltimateSales.AI. No Next.js email logic and no WordPress SMTP.</p>';
+        echo '<div class="wrap"><h1>Newsletter for UltimateSales.AI</h1><p>By ReadySpace · Version 0.4.1 · Operator setup required</p><p>WordPress → UltimateSales.AI. No Next.js email logic and no WordPress SMTP.</p>';
         echo '<p>Private per-site configuration: ' . (Config::ready() ? 'valid' : 'missing or invalid; see the installation guide') . '.</p>';
         echo '<p>Mode: <strong>' . esc_html($s['mode']) . '</strong>. Private credential: ' . (Client::credentialReady() ? 'saved securely' : 'not ready') .
-            '. Connection verification: ' . (self::verified() ? 'passed' : 'pending') . '.</p>';
+            '. Recorded connection verification: ' . (self::verified() ? 'current' : 'not current') . ' (operator gate; not a live provider check).</p>';
+        $siteConfig = defined('RS_NEWSLETTER_CONFIG') && is_array(RS_NEWSLETTER_CONFIG) ? RS_NEWSLETTER_CONFIG : [];
+        SendingConfigurationStatus::render($siteConfig, $s, self::verified());
         echo '<p>Last queue check (UTC): ' . esc_html(gmdate('Y-m-d H:i:s',(int)get_option('cs_newsletter_last_tick',0))) . '.</p>';
         echo '<p>Each new public post needs an Excerpt (10–150 words; aim for 60–90). The queue waits five minutes. Old articles, edits and republishes are not automatically emailed. Missing excerpts and unavailable public pages are held.</p>';
         echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
