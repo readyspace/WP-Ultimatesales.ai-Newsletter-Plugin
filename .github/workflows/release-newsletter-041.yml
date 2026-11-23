@@ -1,0 +1,84 @@
+name: Publish newsletter 0.4.1 to WordPress.org
+# Manual invocation only; publication also requires the protected environment secret.
+on:
+  workflow_dispatch:
+    inputs:
+      release_confirmation:
+        description: 'Type publish-0.4.1 only after the owner approves this exact release'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main' && inputs.release_confirmation == 'publish-0.4.1'
+    environment: wordpress-org-release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Subversion
+        run: sudo apt-get update && sudo apt-get install -y subversion
+      - name: Verify source, package, and SVN changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          export LC_ALL=C
+          root="$RUNNER_TEMP/newsletter-041-release"
+          mkdir -p "$root/source" "$root/baseline" "$root/svn-config"
+          chmod 700 "$root" "$root/svn-config"
+          source_commit=461a2d0f0b11f9ab5839f6143a9803df4ff6b954
+          baseline_commit=634fdbf697d3552bc2949823c03834e427dcc808
+          test "$(git rev-parse "$source_commit^{tree}")" = 2b6f0668e27017fa29b4bf42cfafe6fb215d3217
+          git merge-base --is-ancestor "$source_commit" HEAD
+          git diff --exit-code "$source_commit" HEAD -- cleverspeed-newsletter scripts/package.sh
+          git archive "$source_commit" | tar -x -C "$root/source"
+          git archive "$baseline_commit" cleverspeed-newsletter | tar -x -C "$root/baseline"
+          cd "$root/source"
+          bash scripts/package.sh --submission
+          package=dist/readyspace-newsletter-for-ultimatesales-ai-0.4.1.zip
+          printf '%s  %s\n' d061dfa8a11080e8c6fd96e332bb2c2af85561419cfcdc47d65bfe3e33e6996a "$package" | sha256sum --check
+          unzip -q "$package" -d "$root/package"
+          svn checkout --non-interactive --no-auth-cache --config-dir "$root/svn-config" https://plugins.svn.wordpress.org/readyspace-newsletter-for-ultimatesales-ai/ "$root/svn"
+          cd "$root/svn"
+          svn status > "$root/status-before"
+          test ! -s "$root/status-before"
+          svn list tags > "$root/existing-tags"
+          if grep -qx '0.4.1/' "$root/existing-tags"; then
+            echo 'Release tag 0.4.1 exists; stop and inspect remote state.' >&2
+            exit 1
+          fi
+          diff -rq "$root/baseline/cleverspeed-newsletter" trunk
+          cp -R "$root/package/readyspace-newsletter-for-ultimatesales-ai/." trunk/
+          svn add trunk/includes/sending-configuration-status.php
+          svn copy trunk tags/0.4.1
+          diff -rq "$root/package/readyspace-newsletter-for-ultimatesales-ai" trunk
+          diff -rq trunk tags/0.4.1
+          test -f trunk/cleverspeed-newsletter.php
+          test ! -d trunk/readyspace-newsletter-for-ultimatesales-ai
+          svn status | sort > "$root/status"
+          printf '%s\n' 'A  +    tags/0.4.1' 'M  +    tags/0.4.1/cleverspeed-newsletter.php' 'A       tags/0.4.1/includes/sending-configuration-status.php' 'M  +    tags/0.4.1/readme.txt' 'M       trunk/cleverspeed-newsletter.php' 'A       trunk/includes/sending-configuration-status.php' 'M       trunk/readme.txt' | sort > "$root/expected-status"
+          diff -u "$root/expected-status" "$root/status"
+          cat "$root/status"
+          svn diff --show-copies-as-adds
+      - name: Commit approved 0.4.1 release
+        shell: bash
+        env:
+          WPORG_SVN_PASSWORD: ${{ secrets.WPORG_SVN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          set +x
+          test -n "$WPORG_SVN_PASSWORD" || { echo 'SVN password is not configured.' >&2; exit 1; }
+          root="$RUNNER_TEMP/newsletter-041-release"
+          cd "$root/svn"
+          if svn commit --username readyspace --password-from-stdin --non-interactive --no-auth-cache --config-dir "$root/svn-config" -m 'Release 0.4.1: show read-only sending configuration' <<< "$WPORG_SVN_PASSWORD"; then
+            echo 'SVN commit reported success. Verify the remote revision and release status.'
+          else
+            echo 'Commit outcome needs remote inspection; do not retry automatically.' >&2
+            exit 1
+          fi
+          unset WPORG_SVN_PASSWORD
