@@ -39,6 +39,7 @@ jobs:
           svn copy trunk tags/0.4.1
           svn status | tee "$root/report/svn-status.txt"
           svn diff --show-copies-as-adds > "$root/report/svn-diff.txt"
+          cat "$root/report/svn-diff.txt"
           svn diff --summarize | tee "$root/report/svn-diff-summary.txt"
           diff -rq "$root/package/readyspace-newsletter-for-ultimatesales-ai" trunk
           diff -rq trunk tags/0.4.1
