@@ -1,0 +1,86 @@
+name: Verify newsletter 0.4.1 publication
+on:
+  push:
+    branches: [codex/prepare-newsletter-041-svn]
+    paths: [.github/workflows/verify-newsletter-041-publication.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Subversion
+        run: sudo apt-get update && sudo apt-get install -y subversion
+      - name: Inspect public release only
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/verify-041"
+          mkdir -p "$root/source" "$root/report" "$root/approved" "$root/svn-config"
+          git archive 461a2d0f0b11f9ab5839f6143a9803df4ff6b954 | tar -x -C "$root/source"
+          test "$(git rev-parse 461a2d0f0b11f9ab5839f6143a9803df4ff6b954^{tree})" = 2b6f0668e27017fa29b4bf42cfafe6fb215d3217
+          cd "$root/source"
+          bash scripts/package.sh --submission | tee "$root/report/approved-package.txt"
+          package=dist/readyspace-newsletter-for-ultimatesales-ai-0.4.1.zip
+          printf '%s  %s\n' 'd061dfa8a11080e8c6fd96e332bb2c2af85561419cfcdc47d65bfe3e33e6996a' "$package" | sha256sum --check
+          unzip -q "$package" -d "$root/approved"
+          base=https://plugins.svn.wordpress.org/readyspace-newsletter-for-ultimatesales-ai
+          svn info --non-interactive --no-auth-cache --config-dir "$root/svn-config" "$base/tags/0.4.1" | tee "$root/report/tag-info.txt"
+          svn log --limit 1 --non-interactive --no-auth-cache --config-dir "$root/svn-config" "$base/tags/0.4.1" | tee "$root/report/tag-last-log.txt"
+          svn export --quiet --non-interactive --no-auth-cache --config-dir "$root/svn-config" "$base/tags/0.4.1" "$root/tag"
+          svn export --quiet --non-interactive --no-auth-cache --config-dir "$root/svn-config" "$base/trunk" "$root/trunk"
+          diff -rq "$root/approved/readyspace-newsletter-for-ultimatesales-ai" "$root/tag" | tee "$root/report/tag-compare.txt"
+          echo "SVN tag contents match approved package byte-for-byte."
+          diff -rq "$root/approved/readyspace-newsletter-for-ultimatesales-ai" "$root/trunk" | tee "$root/report/trunk-compare.txt"
+          echo "SVN trunk contents match approved package byte-for-byte."
+          slug=readyspace-newsletter-for-ultimatesales-ai
+          zip_status=$(curl -L -sS -o "$root/public.zip" -w '%{http_code}' "https://downloads.wordpress.org/plugin/${slug}.0.4.1.zip")
+          echo "Official release ZIP HTTP status: $zip_status"
+          printf '%s\n' "$zip_status" > "$root/report/zip-http-status.txt"
+          if [ "$zip_status" = 200 ]; then
+            python3 - "$root/approved/$slug" "$root/public.zip" <<'PY'
+          import hashlib, pathlib, sys, zipfile
+          root=pathlib.Path(sys.argv[1])
+          expected={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+          with zipfile.ZipFile(sys.argv[2]) as z:
+              files={n.split('/',1)[1]:z.read(n) for n in z.namelist() if not n.endswith('/') and n.startswith('readyspace-newsletter-for-ultimatesales-ai/')}
+              extra=[n for n in z.namelist() if not n.endswith('/') and not n.startswith('readyspace-newsletter-for-ultimatesales-ai/')]
+              print('Official ZIP SHA-256:',hashlib.sha256(pathlib.Path(sys.argv[2]).read_bytes()).hexdigest())
+              print('Official ZIP file count:',len(files),'extra outside slug:',extra)
+              print('Missing:',sorted(set(expected)-set(files)),'unexpected:',sorted(set(files)-set(expected)))
+              mismatches=[p for p in expected.keys() & files.keys() if expected[p]!=files[p]]
+              print('Content mismatches:',mismatches)
+              if extra or set(expected)!=set(files) or mismatches: raise SystemExit(1)
+              print('PASS official ZIP contents match approved package byte-for-byte.')
+          PY
+          fi
+          curl -G -sS --data-urlencode 'action=plugin_information' --data-urlencode "request[slug]=$slug" --data-urlencode 'request[fields][versions]=1' https://api.wordpress.org/plugins/info/1.2/ > "$root/report/plugin-info.json"
+          python3 - "$root/report/plugin-info.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          print('Directory API slug:', x.get('slug'))
+          print('Directory API version:', x.get('version'))
+          print('Directory API download:', x.get('download_link'))
+          print('Version 0.4.1 included:', '0.4.1' in (x.get('versions') or {}))
+          PY
+          python3 - "$slug" > "$root/request.json" <<'PY'
+          import json,sys
+          s=sys.argv[1]
+          print(json.dumps({'plugins':{s+'/cleverspeed-newsletter.php':{'Name':'Newsletter for UltimateSales.AI','Version':'0.4.0','UpdateURI':False}},'active':[s+'/cleverspeed-newsletter.php']}))
+          PY
+          curl -sS -A 'WordPress/6.9; https://example.test' --data-urlencode "plugins@$root/request.json" --data-urlencode 'locale=en_US' 'https://api.wordpress.org/plugins/update-check/1.1/?wp_version=6.9' > "$root/report/update-api.json"
+          python3 - "$root/report/update-api.json" <<'PY'
+          import json,sys
+          data=json.load(open(sys.argv[1]))
+          print('Update API response:',json.dumps(data,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: newsletter-041-publication-verification
+          path: ${{ runner.temp }}/verify-041/report/
+          if-no-files-found: warn
