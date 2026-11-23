@@ -1,6 +1,15 @@
 # Release 0.4.1 — review candidate
 
-Prepared on 23 November 2026. The previously published WordPress.org release is 0.4.0. This document prepares the source update and explains publication; it does not record a WordPress.org release or a live-site deployment.
+Version 0.4.1 was uploaded to the existing WordPress.org listing on 23 November 2026. The listing and official download are available; distribution to site update APIs remains subject to WordPress.org's security review and cooldown. Publication did not directly install the update on any site.
+
+## Publication evidence — 23 November 2026
+
+- Reviewed source commit: `7a9759eb5061a5ea7ca1b0f28a17d07e2dbd63b0`; merged plugin source revision: `461a2d0f0b11f9ab5839f6143a9803df4ff6b954`. The merge tree matches the reviewed source tree.
+- Reviewed submission package: `readyspace-newsletter-for-ultimatesales-ai-0.4.1.zip`; SHA-256 `d061dfa8a11080e8c6fd96e332bb2c2af85561419cfcdc47d65bfe3e33e6996a`.
+- SVN upload completed as `readyspace` in revision `3818140`, at 11:42 UTC. The [release workflow](https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin/actions/runs/45167225206) reported a successful commit. Release Confirmation was disabled when checked; no confirmation email was required.
+- The [publication verification run](https://github.com/readyspace/WP-Ultimatesales.ai-Newsletter-Plugin/actions/runs/45168181022) exported the public SVN tag and trunk, and downloaded the [official 0.4.1 ZIP](https://downloads.wordpress.org/plugin/readyspace-newsletter-for-ultimatesales-ai.0.4.1.zip). All ten extracted files matched the approved package byte for byte. The official ZIP container SHA-256 was `ca0bd31a8933ecacc51040aeab01164625bdbfcadc5bac798dd539557db3db8`; container bytes differ from the reviewed ZIP while file contents match.
+- The WordPress.org listing and directory information API showed version 0.4.1. At approximately 11:46 UTC, the signed-in plugin owner page reported that distribution to sites would begin in about six hours. This is an estimate; update API availability and actual site update timing were not yet confirmed.
+- GitHub Actions on the reviewed source passed 10 jobs, including isolated suites and the WordPress/MySQL matrix. Official Plugin Check reported 0 errors and 29 warnings. A fictional-data isolated WordPress functional check passed, but a visual browser review remained incomplete before publication.
 
 ## What changes
 
