@@ -9,13 +9,14 @@
 - `includes/http-policy.php`: pure, configuration-derived route, transport and request-body validation.
 - `includes/html-equivalence.php`: complete DOM comparison with narrow provider formatting normalization.
 - `includes/credential.php`: authenticated encryption and credential storage.
+- `includes/sending-configuration-status.php`: administrator-only, read-only rendering of allowlisted per-site settings; no provider requests.
 - `tests/`: standalone synthetic PHP suites plus a separate disposable WordPress/MySQL upgrade laboratory. No real provider requests.
 
 Internal `CleverSpeed\Newsletter`, `cs_*` and `cleverspeed_*` identifiers are retained for migration compatibility. They contain no live account configuration. The public software author is ReadySpace; the newsletter brand comes from each site's configuration.
 
 ## Test and package
 
-Run `bash scripts/test.sh` with PHP 8.1+ and required extensions. The script lints PHP and runs ten isolated suites covering policy, worker, credential, admin handlers, configuration, activation, HTTP policy, client integrity, HTML equivalence and isolation configuration. Tests use fictional domains/contacts and mocked HTTP. Do not substitute a live WordPress bootstrap.
+Run `bash scripts/test.sh` with PHP 8.1+ and required extensions. The script lints PHP and runs eleven isolated suites covering policy, worker, credential, admin handlers, sending configuration display, configuration, activation, HTTP policy, client integrity, HTML equivalence and isolation configuration. Tests use fictional domains/contacts and mocked HTTP. Do not substitute a live WordPress bootstrap.
 
 Run `bash scripts/package.sh --candidate` to build the isolated-review ZIP from an explicit file list. `--submission` additionally requires approved licence and verified compatibility metadata. Neither build mode replaces the manual release readiness checks. The package uses the published directory slug while preserving legacy data identifiers. Tests, operator documentation, private configuration, Git history and local operational files are excluded; directory readme and an approved licence are included. This plugin has no Composer/npm runtime dependencies, bundled fonts or images. Review both source and archive before releasing.
 
