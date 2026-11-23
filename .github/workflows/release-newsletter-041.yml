@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Check out repository history
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -75,7 +75,17 @@ jobs:
           test -n "$WPORG_SVN_PASSWORD" || { echo 'SVN password is not configured.' >&2; exit 1; }
           root="$RUNNER_TEMP/newsletter-041-release"
           cd "$root/svn"
-          if svn commit --username readyspace --password-from-stdin --non-interactive --no-auth-cache --config-dir "$root/svn-config" -m 'Release 0.4.1: show read-only sending configuration' <<< "$WPORG_SVN_PASSWORD"; then
+          # Check the current remote trunk and SVN metadata again immediately before commit.
+          # The secret is removed from the environment of each subprocess.
+          env -u WPORG_SVN_PASSWORD svn export --non-interactive --no-auth-cache --config-dir "$root/svn-config" https://plugins.svn.wordpress.org/readyspace-newsletter-for-ultimatesales-ai/trunk "$root/remote-trunk"
+          env -u WPORG_SVN_PASSWORD diff -rq "$root/baseline/cleverspeed-newsletter" "$root/remote-trunk"
+          env -u WPORG_SVN_PASSWORD svn status --show-updates --xml --non-interactive --no-auth-cache --config-dir "$root/svn-config" trunk tags > "$root/remote-status.xml"
+          env -u WPORG_SVN_PASSWORD python3 -c 'import sys,xml.etree.ElementTree as E; t=E.parse(sys.argv[1]); bad=[x for x in t.findall(".//entry") if any(r.get(k,"none") not in ("none","normal") for r in x.findall("repos-status") for k in ("item","props"))]; print("Remote changes since checkout:", [x.get("path") for x in bad]); sys.exit(bool(bad))' "$root/remote-status.xml"
+          env -u WPORG_SVN_PASSWORD svn list --non-interactive --no-auth-cache --config-dir "$root/svn-config" https://plugins.svn.wordpress.org/readyspace-newsletter-for-ultimatesales-ai/tags > "$root/final-tags"
+          if grep -qx '0.4.1/' "$root/final-tags"; then echo 'Release tag 0.4.1 exists; stop and inspect remote state.' >&2; exit 1; fi
+          env -u WPORG_SVN_PASSWORD svn status | sort > "$root/final-status"
+          env -u WPORG_SVN_PASSWORD diff -u "$root/expected-status" "$root/final-status"
+          if env -u WPORG_SVN_PASSWORD svn commit --username readyspace --password-from-stdin --non-interactive --no-auth-cache --config-dir "$root/svn-config" -m 'Release 0.4.1: show read-only sending configuration' <<< "$WPORG_SVN_PASSWORD"; then
             echo 'SVN commit reported success. Verify the remote revision and release status.'
           else
             echo 'Commit outcome needs remote inspection; do not retry automatically.' >&2
