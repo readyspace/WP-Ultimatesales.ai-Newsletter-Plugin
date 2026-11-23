@@ -70,7 +70,7 @@ jobs:
           python3 - "$slug" > "$root/request.json" <<'PY'
           import json,sys
           s=sys.argv[1]
-          print(json.dumps({'plugins':{s+'/cleverspeed-newsletter.php':{'Name':'Newsletter for UltimateSales.AI','Version':'0.4.0','UpdateURI':False}},'active':[s+'/cleverspeed-newsletter.php']}))
+          print(json.dumps({'plugins':{s+'/cleverspeed-newsletter.php':{'Name':'Newsletter for UltimateSales.AI','Version':'0.4.0','UpdateURI':False},'akismet/akismet.php':{'Name':'Akismet Anti-spam: Spam Protection','Version':'1.0','UpdateURI':False}},'active':[s+'/cleverspeed-newsletter.php','akismet/akismet.php']}))
           PY
           curl -sS -A 'WordPress/6.9; https://example.test' --data-urlencode "plugins@$root/request.json" --data-urlencode 'locale=en_US' 'https://api.wordpress.org/plugins/update-check/1.1/?wp_version=6.9' > "$root/report/update-api.json"
           python3 - "$root/report/update-api.json" <<'PY'
